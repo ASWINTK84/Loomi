@@ -89,9 +89,9 @@ const Hero = () => {
                           <p className="text-gray-600 text-sm md:text-base mb-6 max-w-md mx-auto md:mx-0">
                             {product.description}
                           </p>
-                          <a href={`/product/${product._id}`} className="inline-block bg-gray-800 text-white text-base md:text-lg font-medium px-6 py-3 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                        <Link to={`/product/${product._id}`} ><a href="" className="inline-block bg-gray-800 text-white text-base md:text-lg font-medium px-6 py-3 rounded-md hover:bg-gray-700 transition-colors duration-300">
                             Shop Now
-                          </a>
+                          </a></Link>  
                         </div>
                         <div className="relative z-10 w-full md:w-1/2 lg:w-2/5 flex justify-center items-center p-4">
                           <img
