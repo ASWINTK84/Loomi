@@ -211,12 +211,9 @@ export default function Navbar() {
             {[
               ['/', 'Home'],
               ['/shop', 'Shop'],
-              ['/new-arrivals', 'New Arrivals'],
-              ['/sale', 'Sale'],
-              ['/about', 'About Us'],
-              ['/faq', 'FAQ'],
-              ['/contact', 'Contact Us'],
-              ['/privacy-policy', 'Privacy Policy'],
+             
+              ['/offersalepage', 'Sale'],
+             
             ].map(([link, label]) => (
               <li key={link}>
                 <button onClick={() => { navigate(link); closeMobileMenu(); }} className="block w-full py-2 hover:text-indigo-600">
