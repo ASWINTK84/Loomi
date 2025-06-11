@@ -8,7 +8,7 @@ import { FaChevronLeft, FaTag, FaRulerCombined, FaPalette, FaShoppingCart, FaSpi
 import { toast } from 'react-toastify';
 import { useWishlist } from '../context/WishlistContext';
 
-const API_BASE_URL = 'http://localhost:5050/api/v1/product';
+const API_BASE_URL = 'https://loomibackend.onrender.com/api/v1/product';
 
 const SingleProductPage = () => {
     const { productId } = useParams();

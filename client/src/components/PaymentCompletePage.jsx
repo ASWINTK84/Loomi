@@ -33,7 +33,7 @@ const PaymentCompletePage = () => {
                 try {
                     // This API call would confirm the payment status with your backend
                     // and update the order status.
-                    const response = await axios.post(`http://localhost:5050/api/v1/order/confirm-payment/${orderId}`, {
+                    const response = await axios.post(`https://loomibackend.onrender.com/api/v1/order/confirm-payment/${orderId}`, {
                         paymentStatus: 'Paid', // This should come from a payment gateway callback/webhook
                     }, {
                         headers: {

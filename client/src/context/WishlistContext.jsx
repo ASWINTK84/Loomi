@@ -37,7 +37,7 @@ export const WishlistProvider = ({ children }) => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('http://localhost:5050/api/v1/wishlist', config);
+        const response = await axios.get('https://loomibackend.onrender.com/api/v1/wishlist', config);
         setWishlist(response.data.wishlist.products || []); // Assuming products array is returned
       } catch (err) {
         console.error('Failed to fetch wishlist from backend:', err);
@@ -69,7 +69,7 @@ export const WishlistProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.post('http://localhost:5050/api/v1/wishlist', { productId: product._id }, config);
+      const response = await axios.post('https://loomibackend.onrender.com/api/v1/wishlist', { productId: product._id }, config);
       setWishlist(response.data.wishlist.products); // Update state with the new wishlist from backend
       console.log(`${product.name} added to wishlist.`);
       return true;
@@ -93,7 +93,7 @@ export const WishlistProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.delete(`http://localhost:5050/api/v1/wishlist/${productId}`, config);
+      const response = await axios.delete(`https://loomibackend.onrender.com/api/v1/wishlist/${productId}`, config);
       setWishlist(response.data.wishlist.products); // Update state with the new wishlist from backend
       console.log(`Product with ID ${productId} removed from wishlist.`);
     } catch (err) {

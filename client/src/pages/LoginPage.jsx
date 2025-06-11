@@ -19,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5050/api/v1/auth/login', {
+      const res = await fetch('hhttps://loomibackend.onrender.com/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -45,7 +45,7 @@ export default function LoginPage() {
     try {
       const token = response.credential;
 
-      const res = await fetch('http://localhost:5050/api/v1/auth/google-login', {
+      const res = await fetch('https://loomibackend.onrender.com/api/v1/auth/google-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: token }),

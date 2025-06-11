@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 
-const API_BASE_URL = 'http://localhost:5050/api';
+const API_BASE_URL = 'https://loomibackend.onrender.com/api';
 
 const CheckoutPage = () => {
     const { cartItems, cartTotal, clearCart } = useCart();

@@ -40,7 +40,7 @@ const ShopPage = () => {
             setLoadingInitial(true);
             setErrorInitial(null);
             try {
-                const response = await axios.get('http://localhost:5050/api/v1/product/get-product');
+                const response = await axios.get('https://loomibackend.onrender.com/api/v1/product/get-product');
                 setAllProducts(response.data.products);
             } catch (err) {
                 setErrorInitial('Failed to fetch products');

@@ -16,12 +16,12 @@ export const ProductProvider = ({ children }) => {
       setError(null);
 
       // Fetch Offer Products
-      const offerResponse = await axios.get('http://localhost:5050/api/offer-products/getoffer-products');
+      const offerResponse = await axios.get('https://loomibackend.onrender.com/api/offer-products/getoffer-products');
      
       setOfferProducts(offerResponse.data.offerProducts || offerResponse.data || []);
 
       // Fetch All Products
-      const allProductsResponse = await axios.get('http://localhost:5050/api/v1/product/get-product');
+      const allProductsResponse = await axios.get('https://loomibackend.onrender.com/api/v1/product/get-product');
    
       if (allProductsResponse.data && Array.isArray(allProductsResponse.data.products)) {
         setAllProducts(allProductsResponse.data.products);

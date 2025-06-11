@@ -31,7 +31,7 @@ export default function Account() {
         address: formData.address.trim(),
       };
 
-      const res = await fetch('http://localhost:5050/api/v1/auth/update-profile', {
+      const res = await fetch('https://loomibackend.onrender.com/api/v1/auth/update-profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

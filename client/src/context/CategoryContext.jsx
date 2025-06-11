@@ -9,7 +9,7 @@ export const CategoryProvider = ({ children }) => {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5050/api/v1/Category/get-category");
+      const { data } = await axios.get("https://loomibackend.onrender.com/api/v1/Category/get-category");
       setCategories(data.category || []);
     } catch (error) {
       console.error("Error fetching categories:", error);

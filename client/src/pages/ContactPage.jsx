@@ -16,7 +16,7 @@ const ContactPage = () => {
     setSuccess('');
     setError('');
     try {
-      const { data } = await axios.post('http://localhost:5050/api/contact', form);
+      const { data } = await axios.post('https://loomibackend.onrender.com/api/contact', form);
       setSuccess(data.message);
       setForm({ name: '', email: '', message: '' });
     } catch (err) {
