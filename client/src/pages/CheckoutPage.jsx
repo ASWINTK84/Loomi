@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 
-const API_BASE_URL = 'https://loomibackend.onrender.com/api';
+const API_BASE_URL = 'https://loomibackend.onrender.com';
 
 const CheckoutPage = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
@@ -219,7 +219,7 @@ const CheckoutPage = () => {
         } else if (paymentMethod === 'online') {
             try {
                 // Step 1: Create Razorpay Order on your backend
-                const razorpayOrderResponse = await fetch(`${API_BASE_URL}/orders/razorpay-order`, {
+                const razorpayOrderResponse = await fetch(`${API_BASE_URL}/api/orders/razorpay-order`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
