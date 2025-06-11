@@ -1,4 +1,3 @@
-// src/pages/OfferSalesPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useProducts } from '../context/ProductContext';
 import { BsGridFill, BsList } from 'react-icons/bs';
