@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/* These styles are for the custom arrows in react-slick */
+.custom-slick-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10; /* Ensure arrows are above slides */
+  cursor: pointer;
+  width: 40px; /* Make the clickable area larger */
+  height: 40px;
+  display: flex !important; /* Override slick's inline style */
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.custom-slick-arrow:hover {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.custom-slick-arrow.slick-prev {
+  left: -40px; /* Adjust as needed */
+}
+
+.custom-slick-arrow.slick-next {
+  right: -40px; /* Adjust as needed */
+}
+
+/* Hide slick's default arrows if you are using custom ones */
+.slick-prev:before, .slick-next:before {
+  display: none;
+}
+
+
+
+
+.input {
+  @apply w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* src/pages/OfferSalesPage.css */
+
+/* Remove or reduce side padding for the main container */
+.offer-sales-page-container {
+  /* Set max-width to a higher value or 100% to fill more space */
+  max-width: 1400px; /* Example: make it wider, or set to 100% */
+  margin: 0 auto; /* Keeps it centered if max-width is less than screen width */
+  padding: 0; /* Remove all padding by default */
+  font-family: Arial, sans-serif;
+  color: #333; /* Default text color */
+}
+
+/* Add horizontal padding back to internal sections if needed,
+   to prevent content from touching screen edges on small devices. */
+.hero-section,
+.product-list-section .flex.justify-between, /* For the header/toggle row */
+.product-list-section .product-grid,
+.product-list-section .flex.flex-col.gap-4, /* For list view products */
+.cta-section {
+  padding-left: 20px; /* Default padding for content within sections */
+  padding-right: 20px;
+}
+
+/* Adjust padding for larger screens if you want more space */
+@media (min-width: 768px) {
+  .hero-section,
+  .product-list-section .flex.justify-between,
+  .product-list-section .product-grid,
+  .product-list-section .flex.flex-col.gap-4,
+  .cta-section {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+/* General styles that Tailwind doesn't directly cover, or custom animations */
+.hero-section h1.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .7; /* Slightly less transparent for pulse */
+  }
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
