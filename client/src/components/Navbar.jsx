@@ -106,7 +106,7 @@ export default function Navbar() {
                         }}
                         className="w-full text-left px-4 py-2 text-gray-700 hover:bg-indigo-100"
                       >
-                        Profile
+                        Profiles
                       </button>
                       <button
                         onClick={() => {
