@@ -5,6 +5,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { FaShippingFast, FaRedo, FaShieldAlt, FaComments } from 'react-icons/fa';
 import { useProducts } from '../../context/ProductContext';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   const { offerProducts, loading, error } = useProducts();
