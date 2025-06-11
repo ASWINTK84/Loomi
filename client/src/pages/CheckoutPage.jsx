@@ -180,7 +180,7 @@ const CheckoutPage = () => {
 
             const token = localStorage.getItem("token");
 
-            const response = await fetch(`${API_BASE_URL}/orders/place`, {
+            const response = await fetch(`${API_BASE_URL}/api/orders/place`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
