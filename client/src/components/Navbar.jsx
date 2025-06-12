@@ -42,7 +42,6 @@ export default function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-      // For mobile menu, clicking the overlay handles closing
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -66,25 +65,27 @@ export default function Navbar() {
       {/* Sticky Top Header */}
       <div className="w-full font-sans sticky top-0 z-50 bg-white shadow-sm">
         <div className="bg-blue-50">
-          <div className="container mx-auto flex items-center justify-between px-4 py-5 lg:py-6">
+          {/* Adjusted padding for smaller screens */}
+          <div className="container mx-auto flex items-center justify-between px-3 py-5 lg:px-4 lg:py-6">
             {/* Logo */}
             <div
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 sm:space-x-3 text-gray-900 hover:opacity-80 cursor-pointer" // Adjusted space-x
+              // Adjusted space-x for closer elements on smaller screens
+              className="flex items-center space-x-1 sm:space-x-2 text-gray-900 hover:opacity-80 cursor-pointer"
             >
               <img
                 src="https://avatars.githubusercontent.com/u/68288528?s=200&v=4"
                 alt="LoOmi Logo"
-                className="h-8 sm:h-9" // Slightly smaller logo on small screens
+                className="h-7 sm:h-8 lg:h-9" // Smaller logo on xs, sm screens
                 loading="lazy"
               />
-              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight select-none">LoOmi</span> {/* Adjusted font size */}
+              <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight select-none">LoOmi</span> {/* Smaller text on xs, sm screens */}
             </div>
 
             {/* Category Dropdown */}
-            <div className="relative inline-block w-full max-w-xs md:max-w-sm lg:max-w-md">
+            <div className="relative inline-block w-full max-w-[150px] xs:max-w-[200px] sm:max-w-xs md:max-w-sm lg:max-w-md"> {/* More granular width control */}
               <select
-                className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none" // Added appearance-none
+                className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none"
                 value={selectedCategory}
                 onChange={handleCategoryChange}
               >
@@ -101,7 +102,8 @@ export default function Navbar() {
             </div>
 
             {/* Icons & Auth */}
-            <div className="flex items-center gap-4 sm:gap-7"> {/* Adjusted gap */}
+            {/* Adjusted gap for closer icons on smaller screens */}
+            <div className="flex items-center gap-3 sm:gap-4 lg:gap-7">
               {isLoggedIn ? (
                 <div className="relative" ref={dropdownRef}>
                   <button
