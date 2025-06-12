@@ -111,7 +111,8 @@ export default function Navbar() {
                     className="flex items-center gap-2 text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
                   >
                     <FaUser className="text-xl" />
-                    <span className="hidden sm:block font-medium text-base">{user?.name || 'Account'}</span>
+                    {/* User name: Always visible, but with max-width and truncation for small screens */}
+                    <span className="font-medium text-base inline-block max-w-[80px] sm:max-w-[100px] lg:max-w-none truncate">{user?.name || 'Account'}</span>
                     <FaChevronDown className="text-sm mt-[2px]" />
                   </button>
 
@@ -219,7 +220,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* START: Mobile Menu Drawer (New Design) */}
+      {/* Mobile Menu Drawer (New Design) */}
       {/* Overlay */}
       {isMobileMenuOpen && (
         <div
