@@ -32,6 +32,7 @@ export default function Navbar() {
     setSelectedCategory(categoryName);
     navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
 
+    // Close mobile menu if category is selected from there
     if (isMobileMenuOpen) {
       closeMobileMenu();
     }
@@ -67,7 +68,7 @@ export default function Navbar() {
         <div className="bg-blue-50">
           {/* Adjusted padding for smaller screens */}
           <div className="container mx-auto flex items-center justify-between px-3 py-5 lg:px-4 lg:py-6">
-            {/* Logo - Adjusted sizing for "LoOmi" to fit better on small screens */}
+            {/* Logo - Optimized for "LoOmi" to show completely */}
             <div
               onClick={() => navigate('/')}
               // Adjusted space-x for closer elements on smaller screens
@@ -76,14 +77,14 @@ export default function Navbar() {
               <img
                 src="https://avatars.githubusercontent.com/u/68288528?s=200&v=4"
                 alt="LoOmi Logo"
-                className="h-5 sm:h-8 lg:h-9" // Further reduced height for smallest screens
+                className="h-5 sm:h-8 lg:h-9" // Very small logo on smallest screens
                 loading="lazy"
               />
-              <span className="text-base sm:text-2xl lg:text-3xl font-extrabold tracking-tight select-none">LoOmi</span> {/* Further reduced text size for smallest screens */}
+              <span className="text-base sm:text-2xl lg:text-3xl font-extrabold tracking-tight select-none">LoOmi</span> {/* Smallest text size for "LoOmi" on smallest screens */}
             </div>
 
-            {/* Category Dropdown - Adjusted max-width for smaller screens */}
-            <div className="relative inline-block w-full max-w-[120px] sm:max-w-xs md:max-w-sm lg:max-w-md"> {/* More constrained width for smallest screens */}
+            {/* Category Dropdown - Hidden on small screens, shown on md and up */}
+            <div className="relative hidden md:inline-block w-full max-w-xs md:max-w-sm lg:max-w-md">
               <select
                 className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none"
                 value={selectedCategory}
@@ -111,8 +112,8 @@ export default function Navbar() {
                     className="flex items-center gap-2 text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
                   >
                     <FaUser className="text-xl" />
-                    {/* User name: Always visible, but with max-width and truncation for small screens */}
-                    <span className="font-medium text-base inline-block max-w-[80px] sm:max-w-[100px] lg:max-w-none truncate">{user?.name || 'Account'}</span>
+                    {/* User name: Reduced to text-sm for mobile, with max-width and truncation */}
+                    <span className="font-medium text-sm inline-block max-w-[80px] sm:max-w-[100px] lg:max-w-none truncate">{user?.name || 'Account'}</span>
                     <FaChevronDown className="text-sm mt-[2px]" />
                   </button>
 
@@ -262,6 +263,27 @@ export default function Navbar() {
               </button>
             </li>
           ))}
+
+          {/* Category Selection in Mobile Menu */}
+          <li className="border-t border-gray-200 mt-4 pt-4">
+            <div className="relative w-full">
+              <select
+                className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none text-base"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <option value="">All Categories</option>
+                {categories.map(({ _id, name }) => (
+                  <option key={_id} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <FaChevronDown className="h-4 w-4" />
+              </div>
+            </div>
+          </li>
 
           {/* Conditional links for logged in/out users */}
           <li className="border-t border-gray-200 mt-4 pt-4"></li>
