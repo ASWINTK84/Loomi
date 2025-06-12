@@ -198,43 +198,106 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <nav className="lg:hidden fixed inset-0 bg-white bg-opacity-95 z-40 flex flex-col items-center py-8">
+      {/* Overlay for when the mobile menu is open */}
+{isMobileMenuOpen && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+    onClick={closeMobileMenu} // Close menu when clicking outside
+  ></div>
+)}
+
+{/* Mobile Menu Content */}
+<nav className={`
+  fixed inset-y-0 right-0 z-40 bg-white shadow-lg
+  transform transition-transform ease-in-out duration-300
+  ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
+  w-3/4 max-w-xs sm:max-w-sm lg:hidden // Adjust width as needed for different mobile sizes
+  flex flex-col py-8 px-6
+`}>
+  <button
+    className="absolute top-4 right-4 text-gray-700 hover:text-indigo-600 text-3xl p-2 rounded-full hover:bg-gray-100 transition-colors"
+    onClick={closeMobileMenu}
+    aria-label="Close Mobile Menu"
+  >
+    <FaTimes />
+  </button>
+
+  <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
+    {[
+      ['/', 'Home'],
+      ['/shop', 'Shop'],
+      ['/offersalepage', 'Sale'],
+      // Add other main navigation links here
+    ].map(([link, label]) => (
+      <li key={link}>
+        <button
+          onClick={() => {
+            navigate(link);
+            closeMobileMenu();
+          }}
+          className="block w-full py-2 text-left hover:text-indigo-600 transition-colors"
+        >
+          {label}
+        </button>
+      </li>
+    ))}
+
+    {/* Conditional links for logged in/out users */}
+    <li className="border-t border-gray-200 mt-4 pt-4"></li> {/* Separator */}
+    {!isLoggedIn ? (
+      <>
+        <li>
           <button
-            className="absolute top-4 right-4 text-gray-800 hover:text-indigo-600 text-3xl"
-            onClick={closeMobileMenu}
+            onClick={() => {
+              navigate('/login');
+              closeMobileMenu();
+            }}
+            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
           >
-            <FaTimes />
+            Sign In
           </button>
-          <ul className="flex flex-col gap-7 text-2xl font-medium text-gray-800 mt-12 w-full text-center">
-            {[
-              ['/', 'Home'],
-              ['/shop', 'Shop'],
-             
-              ['/offersalepage', 'Sale'],
-             
-            ].map(([link, label]) => (
-              <li key={link}>
-                <button onClick={() => { navigate(link); closeMobileMenu(); }} className="block w-full py-2 hover:text-indigo-600">
-                  {label}
-                </button>
-              </li>
-            ))}
-            {!isLoggedIn ? (
-              <>
-                <li><button onClick={() => { navigate('/login'); closeMobileMenu(); }} className="text-indigo-600 font-semibold py-2">Sign In</button></li>
-                <li><button onClick={() => { navigate('/register'); closeMobileMenu(); }} className="text-indigo-600 font-semibold py-2">Register</button></li>
-              </>
-            ) : (
-              <>
-                <li><button onClick={() => { navigate('/account'); closeMobileMenu(); }} className="text-indigo-600 font-semibold py-2">Profile</button></li>
-                <li><button onClick={() => { navigate('/myorders'); closeMobileMenu(); }} className="text-indigo-600 font-semibold py-2">Orders</button></li>
-              </>
-            )}
-          </ul>
-        </nav>
-      )}
+        </li>
+        <li>
+          <button
+            onClick={() => {
+              navigate('/register');
+              closeMobileMenu();
+            }}
+            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+          >
+            Register
+          </button>
+        </li>
+      </>
+    ) : (
+      <>
+        <li>
+          <button
+            onClick={() => {
+              navigate('/account');
+              closeMobileMenu();
+            }}
+            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+          >
+            Profile
+          </button>
+        </li>
+        <li>
+          <button
+            onClick={() => {
+              navigate('/myorders');
+              closeMobileMenu();
+            }}
+            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+          >
+            Orders
+          </button>
+        </li>
+        {/* Add a logout button here if you wish */}
+      </>
+    )}
+  </ul>
+</nav>
     </>
   );
 }
