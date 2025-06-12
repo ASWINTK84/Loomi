@@ -5,8 +5,8 @@ import {
   FaUser,
   FaChevronDown,
   FaHeart,
-  FaBars,
-  FaTimes,
+  FaBars, // Hamburger icon
+  FaTimes, // Close icon
   FaPhoneAlt,
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
@@ -31,17 +31,38 @@ export default function Navbar() {
     const categoryName = e.target.value;
     setSelectedCategory(categoryName);
     navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
+    // Close mobile menu if it's open when category is selected
+    if (isMobileMenuOpen) {
+      closeMobileMenu();
+    }
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Close user dropdown if click outside
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
+      // Close mobile menu if click outside AND the click is not on the mobile menu toggle button
+      // The overlay handles closing the menu when clicking on the dimmed area
+      // but if there's no overlay or user clicks outside the menu itself, we might want to close it.
+      // For this specific drawer design, the overlay handles it.
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Effect to manage body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'; // Prevent scrolling
+    } else {
+      document.body.style.overflow = ''; // Allow scrolling
+    }
+    return () => {
+      document.body.style.overflow = ''; // Clean up on unmount
+    };
+  }, [isMobileMenuOpen]);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -66,7 +87,7 @@ export default function Navbar() {
             </div>
 
             {/* Category Dropdown */}
-            <div className="relative inline-block w-full max-w-xs">
+            <div className="relative inline-block w-full max-w-xs md:max-w-sm lg:max-w-md"> {/* Adjusted width for responsiveness */}
               <select
                 className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer"
                 value={selectedCategory}
@@ -106,7 +127,7 @@ export default function Navbar() {
                         }}
                         className="w-full text-left px-4 py-2 text-gray-700 hover:bg-indigo-100"
                       >
-                        Profiles
+                        Profile
                       </button>
                       <button
                         onClick={() => {
@@ -119,6 +140,7 @@ export default function Navbar() {
                       </button>
                       <button
                         onClick={() => {
+                          setIsDropdownOpen(false);
                           logout();
                           navigate('/');
                         }}
@@ -133,13 +155,13 @@ export default function Navbar() {
                 <>
                   <button
                     onClick={() => navigate('/login')}
-                    className="text-gray-800 hover:text-indigo-600 font-semibold text-base mr-4"
+                    className="hidden lg:inline-block text-gray-800 hover:text-indigo-600 font-semibold text-base mr-4" // Hide on small screens, visible on large
                   >
                     Sign In
                   </button>
                   <button
                     onClick={() => navigate('/register')}
-                    className="text-gray-800 hover:text-indigo-600 font-semibold text-base"
+                    className="hidden lg:inline-block text-gray-800 hover:text-indigo-600 font-semibold text-base" // Hide on small screens, visible on large
                   >
                     Register
                   </button>
@@ -172,9 +194,11 @@ export default function Navbar() {
                 <span className="hidden sm:inline font-medium text-sm">Cart</span>
               </button>
 
+              {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
               <button
-                className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+                className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2" // Added padding for easier tap
                 onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
               >
                 {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
               </button>
@@ -183,121 +207,143 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Non-sticky Secondary Nav */}
-      <nav className="bg-gray-50 border-t border-gray-200">
+      {/* Non-sticky Secondary Nav (Desktop Only) */}
+      <nav className="bg-gray-50 border-t border-gray-200 hidden lg:block"> {/* Only visible on lg screens and up */}
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <ul className="hidden lg:flex items-center gap-12 text-gray-800 font-semibold">
+          <ul className="flex items-center gap-12 text-gray-800 font-semibold">
             <li><button onClick={() => navigate('/')} className="hover:text-indigo-600">Home</button></li>
             <li><button onClick={() => navigate('/shop')} className="hover:text-indigo-600">Shop</button></li>
             <li><button onClick={() => navigate('/offersalepage')} className="hover:text-indigo-600">Sale</button></li>
           </ul>
-          <div className="hidden md:flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-center gap-2 text-sm text-gray-700">
             <FaPhoneAlt className="text-base text-gray-600" />
             <span>24/7 Support: <strong className="text-gray-900">74920-43477</strong></span>
           </div>
         </div>
       </nav>
 
-      {/* Overlay for when the mobile menu is open */}
-{isMobileMenuOpen && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-    onClick={closeMobileMenu} // Close menu when clicking outside
-  ></div>
-)}
+      {/* START: New Mobile Menu Design */}
+      {/* Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={closeMobileMenu} // Close menu when clicking outside overlay
+        ></div>
+      )}
 
-{/* Mobile Menu Content */}
-<nav className={`
-  fixed inset-y-0 right-0 z-40 bg-white shadow-lg
-  transform transition-transform ease-in-out duration-300
-  ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
-  w-3/4 max-w-xs sm:max-w-sm lg:hidden // Adjust width as needed for different mobile sizes
-  flex flex-col py-8 px-6
-`}>
-  <button
-    className="absolute top-4 right-4 text-gray-700 hover:text-indigo-600 text-3xl p-2 rounded-full hover:bg-gray-100 transition-colors"
-    onClick={closeMobileMenu}
-    aria-label="Close Mobile Menu"
-  >
-    <FaTimes />
-  </button>
-
-  <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
-    {[
-      ['/', 'Home'],
-      ['/shop', 'Shop'],
-      ['/offersalepage', 'Sale'],
-      // Add other main navigation links here
-    ].map(([link, label]) => (
-      <li key={link}>
+      {/* Mobile Menu Drawer */}
+      <nav className={`
+        fixed inset-y-0 right-0 z-40 bg-white shadow-lg
+        transform transition-transform ease-in-out duration-300
+        ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
+        w-3/4 max-w-xs sm:max-w-sm lg:hidden
+        flex flex-col py-8 px-6 overflow-y-auto // Added overflow for long menus
+      `}>
         <button
-          onClick={() => {
-            navigate(link);
-            closeMobileMenu();
-          }}
-          className="block w-full py-2 text-left hover:text-indigo-600 transition-colors"
+          className="absolute top-4 right-4 text-gray-700 hover:text-indigo-600 text-3xl p-2 rounded-full hover:bg-gray-100 transition-colors"
+          onClick={closeMobileMenu}
+          aria-label="Close Mobile Menu"
         >
-          {label}
+          <FaTimes />
         </button>
-      </li>
-    ))}
 
-    {/* Conditional links for logged in/out users */}
-    <li className="border-t border-gray-200 mt-4 pt-4"></li> {/* Separator */}
-    {!isLoggedIn ? (
-      <>
-        <li>
-          <button
-            onClick={() => {
-              navigate('/login');
-              closeMobileMenu();
-            }}
-            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
-          >
-            Sign In
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => {
-              navigate('/register');
-              closeMobileMenu();
-            }}
-            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
-          >
-            Register
-          </button>
-        </li>
-      </>
-    ) : (
-      <>
-        <li>
-          <button
-            onClick={() => {
-              navigate('/account');
-              closeMobileMenu();
-            }}
-            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
-          >
-            Profile
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => {
-              navigate('/myorders');
-              closeMobileMenu();
-            }}
-            className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
-          >
-            Orders
-          </button>
-        </li>
-        {/* Add a logout button here if you wish */}
-      </>
-    )}
-  </ul>
-</nav>
+        <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
+          {/* Main Navigation Links */}
+          {[
+            ['/', 'Home'],
+            ['/shop', 'Shop'],
+            ['/offersalepage', 'Sale'],
+            // Add other main navigation links here
+          ].map(([link, label]) => (
+            <li key={link}>
+              <button
+                onClick={() => { navigate(link); closeMobileMenu(); }}
+                className="block w-full py-2 text-left hover:text-indigo-600 transition-colors"
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+
+          {/* Conditional links for logged in/out users */}
+          {/* Separator Line */}
+          <li className="border-t border-gray-200 mt-4 pt-4"></li>
+          {!isLoggedIn ? (
+            <>
+              <li>
+                <button
+                  onClick={() => { navigate('/login'); closeMobileMenu(); }}
+                  className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+                >
+                  Sign In
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => { navigate('/register'); closeMobileMenu(); }}
+                  className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+                >
+                  Register
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <button
+                  onClick={() => { navigate('/account'); closeMobileMenu(); }}
+                  className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+                >
+                  Profile
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => { navigate('/myorders'); closeMobileMenu(); }}
+                  className="block w-full py-2 text-left text-indigo-600 font-semibold hover:underline"
+                >
+                  Orders
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    logout(); // Call your logout function
+                    closeMobileMenu();
+                    navigate('/'); // Navigate to home after logout
+                  }}
+                  className="block w-full py-2 text-left text-red-600 font-semibold hover:underline"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          )}
+
+          {/* Add Cart/Wishlist for mobile if desired, though often in top bar */}
+          <li className="border-t border-gray-200 mt-4 pt-4"></li>
+          <li>
+            <button
+              onClick={() => { navigate('/cart'); closeMobileMenu(); }}
+              className="block w-full py-2 text-left flex items-center gap-2 text-gray-800 hover:text-indigo-600"
+            >
+              <FaShoppingCart className="text-xl" />
+              Cart {cartItems.length > 0 && <span className="ml-1 px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">{cartItems.length}</span>}
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => { navigate('/wishlist'); closeMobileMenu(); }}
+              className="block w-full py-2 text-left flex items-center gap-2 text-gray-800 hover:text-indigo-600"
+            >
+              <FaHeart className="text-xl" />
+              Wishlist {wishlist?.length > 0 && <span className="ml-1 px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">{wishlist.length}</span>}
+            </button>
+          </li>
+
+        </ul>
+      </nav>
+      {/* END: New Mobile Menu Design */}
     </>
   );
 }
