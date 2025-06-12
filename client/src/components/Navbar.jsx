@@ -5,8 +5,8 @@ import {
   FaUser,
   FaChevronDown,
   FaHeart,
-  FaBars, // Hamburger icon
-  FaTimes, // Close icon
+  FaBars,
+  FaTimes,
   FaPhoneAlt,
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
@@ -31,7 +31,7 @@ export default function Navbar() {
     const categoryName = e.target.value;
     setSelectedCategory(categoryName);
     navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
-    // Close mobile menu if it's open when category is selected
+
     if (isMobileMenuOpen) {
       closeMobileMenu();
     }
@@ -39,20 +39,15 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close user dropdown if click outside
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-      // Close mobile menu if click outside AND the click is not on the mobile menu toggle button
-      // The overlay handles closing the menu when clicking on the dimmed area
-      // but if there's no overlay or user clicks outside the menu itself, we might want to close it.
-      // For this specific drawer design, the overlay handles it.
+      // For mobile menu, clicking the overlay handles closing
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Effect to manage body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden'; // Prevent scrolling
@@ -75,21 +70,21 @@ export default function Navbar() {
             {/* Logo */}
             <div
               onClick={() => navigate('/')}
-              className="flex items-center space-x-3 text-gray-900 hover:opacity-80 cursor-pointer"
+              className="flex items-center space-x-2 sm:space-x-3 text-gray-900 hover:opacity-80 cursor-pointer" // Adjusted space-x
             >
               <img
                 src="https://avatars.githubusercontent.com/u/68288528?s=200&v=4"
                 alt="LoOmi Logo"
-                className="h-9"
+                className="h-8 sm:h-9" // Slightly smaller logo on small screens
                 loading="lazy"
               />
-              <span className="text-3xl font-extrabold tracking-tight select-none">LoOmi</span>
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight select-none">LoOmi</span> {/* Adjusted font size */}
             </div>
 
             {/* Category Dropdown */}
-            <div className="relative inline-block w-full max-w-xs md:max-w-sm lg:max-w-md"> {/* Adjusted width for responsiveness */}
+            <div className="relative inline-block w-full max-w-xs md:max-w-sm lg:max-w-md">
               <select
-                className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer"
+                className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none" // Added appearance-none
                 value={selectedCategory}
                 onChange={handleCategoryChange}
               >
@@ -106,7 +101,7 @@ export default function Navbar() {
             </div>
 
             {/* Icons & Auth */}
-            <div className="flex items-center gap-7">
+            <div className="flex items-center gap-4 sm:gap-7"> {/* Adjusted gap */}
               {isLoggedIn ? (
                 <div className="relative" ref={dropdownRef}>
                   <button
@@ -155,13 +150,13 @@ export default function Navbar() {
                 <>
                   <button
                     onClick={() => navigate('/login')}
-                    className="hidden lg:inline-block text-gray-800 hover:text-indigo-600 font-semibold text-base mr-4" // Hide on small screens, visible on large
+                    className="hidden lg:inline-block text-gray-800 hover:text-indigo-600 font-semibold text-base mr-4"
                   >
                     Sign In
                   </button>
                   <button
                     onClick={() => navigate('/register')}
-                    className="hidden lg:inline-block text-gray-800 hover:text-indigo-600 font-semibold text-base" // Hide on small screens, visible on large
+                    className="hidden lg:inline-block text-gray-800 hover:text-indigo-600 font-semibold text-base"
                   >
                     Register
                   </button>
@@ -196,7 +191,7 @@ export default function Navbar() {
 
               {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
               <button
-                className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2" // Added padding for easier tap
+                className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
                 onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                 aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
               >
@@ -208,7 +203,7 @@ export default function Navbar() {
       </div>
 
       {/* Non-sticky Secondary Nav (Desktop Only) */}
-      <nav className="bg-gray-50 border-t border-gray-200 hidden lg:block"> {/* Only visible on lg screens and up */}
+      <nav className="bg-gray-50 border-t border-gray-200 hidden lg:block">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <ul className="flex items-center gap-12 text-gray-800 font-semibold">
             <li><button onClick={() => navigate('/')} className="hover:text-indigo-600">Home</button></li>
@@ -222,22 +217,22 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* START: New Mobile Menu Design */}
+      {/* START: Mobile Menu Drawer (New Design) */}
       {/* Overlay */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={closeMobileMenu} // Close menu when clicking outside overlay
+          onClick={closeMobileMenu}
         ></div>
       )}
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Drawer Content */}
       <nav className={`
         fixed inset-y-0 right-0 z-40 bg-white shadow-lg
         transform transition-transform ease-in-out duration-300
         ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
         w-3/4 max-w-xs sm:max-w-sm lg:hidden
-        flex flex-col py-8 px-6 overflow-y-auto // Added overflow for long menus
+        flex flex-col py-8 px-6 overflow-y-auto
       `}>
         <button
           className="absolute top-4 right-4 text-gray-700 hover:text-indigo-600 text-3xl p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -253,7 +248,7 @@ export default function Navbar() {
             ['/', 'Home'],
             ['/shop', 'Shop'],
             ['/offersalepage', 'Sale'],
-            // Add other main navigation links here
+            // Add other main navigation links here if needed
           ].map(([link, label]) => (
             <li key={link}>
               <button
@@ -266,7 +261,6 @@ export default function Navbar() {
           ))}
 
           {/* Conditional links for logged in/out users */}
-          {/* Separator Line */}
           <li className="border-t border-gray-200 mt-4 pt-4"></li>
           {!isLoggedIn ? (
             <>
@@ -308,9 +302,9 @@ export default function Navbar() {
               <li>
                 <button
                   onClick={() => {
-                    logout(); // Call your logout function
+                    logout();
                     closeMobileMenu();
-                    navigate('/'); // Navigate to home after logout
+                    navigate('/');
                   }}
                   className="block w-full py-2 text-left text-red-600 font-semibold hover:underline"
                 >
@@ -320,7 +314,7 @@ export default function Navbar() {
             </>
           )}
 
-          {/* Add Cart/Wishlist for mobile if desired, though often in top bar */}
+          {/* Cart & Wishlist for mobile menu */}
           <li className="border-t border-gray-200 mt-4 pt-4"></li>
           <li>
             <button
@@ -340,10 +334,9 @@ export default function Navbar() {
               Wishlist {wishlist?.length > 0 && <span className="ml-1 px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">{wishlist.length}</span>}
             </button>
           </li>
-
         </ul>
       </nav>
-      {/* END: New Mobile Menu Design */}
+      {/* END: Mobile Menu Drawer */}
     </>
   );
 }
