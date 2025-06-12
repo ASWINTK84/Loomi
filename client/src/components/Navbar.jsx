@@ -32,7 +32,6 @@ export default function Navbar() {
     setSelectedCategory(categoryName);
     navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
 
-    // Close mobile menu if category is selected from there
     if (isMobileMenuOpen) {
       closeMobileMenu();
     }
@@ -112,8 +111,8 @@ export default function Navbar() {
                     className="flex items-center gap-2 text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
                   >
                     <FaUser className="text-xl" />
-                    {/* User name: Reduced to text-sm for mobile, with max-width and truncation */}
-                    <span className="font-medium text-sm inline-block max-w-[80px] sm:max-w-[100px] lg:max-w-none truncate">{user?.name || 'Account'}</span>
+                    {/* User name: Hidden on small screens, visible on md and up */}
+                    <span className="font-medium text-sm hidden md:inline-block max-w-[80px] sm:max-w-[100px] lg:max-w-none truncate">{user?.name || 'Account'}</span>
                     <FaChevronDown className="text-sm mt-[2px]" />
                   </button>
 
