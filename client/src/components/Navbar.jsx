@@ -21,12 +21,12 @@ import {
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
+import { useWishlist } = from '../context/WishlistContext';
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // Removed isSecondaryMobileNavOpen state as it will be always visible
+    // Removed isSecondaryMobileNavOpen state - no longer needed
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const { cartItems } = useCart();
@@ -42,7 +42,7 @@ export default function Navbar() {
         setSelectedCategory(categoryName);
         navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
 
-        // Close main mobile menu if a category is selected
+        // Always close main mobile menu if a category is selected
         if (isMobileMenuOpen) {
             closeMobileMenu();
         }
@@ -195,7 +195,7 @@ export default function Navbar() {
                                 <span className="hidden sm:inline font-medium text-sm">Cart</span>
                             </button>
 
-                            {/* Main Mobile Menu Toggle Button (Hamburger / Close Icon) */}
+                            {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
                             <button
                                 className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
                                 onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -221,37 +221,6 @@ export default function Navbar() {
                         <span>24/7 Support: <strong className="text-gray-900">74920-43477</strong></span>
                     </div>
                 </div>
-            </nav>
-
-            {/* Always-Visible, Compact Mobile Secondary Navigation (Shop, Home, Sale) */}
-            {/* It will be hidden on lg screens and up */}
-            <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg lg:hidden">
-                <ul className="flex justify-around items-center py-2 border-t border-gray-200">
-                    <li>
-                        <button
-                            onClick={() => navigate('/')}
-                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
-                        >
-                            <FaHome className="text-xl mb-0.5" /> Home
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            onClick={() => navigate('/shop')}
-                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
-                        >
-                            <FaStore className="text-xl mb-0.5" /> Shop
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            onClick={() => navigate('/offersalepage')}
-                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
-                        >
-                            <FaTag className="text-xl mb-0.5" /> Sale
-                        </button>
-                    </li>
-                </ul>
             </nav>
 
             {/* Main Mobile Menu Drawer */}
@@ -283,19 +252,20 @@ export default function Navbar() {
 
                 {/* Mobile Menu Items - Grouped for clarity */}
                 <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
-                    {/* Main Navigation (These are redundant if the bottom nav is always there, but can serve as larger links for completeness) */}
-                    <li>
-                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Main Navigation</h3>
-                        <ul>
-                            <li><button onClick={() => { navigate('/'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaHome className="text-lg" /> Home</button></li>
-                            <li><button onClick={() => { navigate('/shop'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaStore className="text-lg" /> Shop</button></li>
-                            <li><button onClick={() => { navigate('/offersalepage'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaTag className="text-lg" /> Sale</button></li>
+
+                    {/* Elevated Main Navigation (Home, Shop, Sale) - Your "Secondary Nav" within the drawer */}
+                    <li className="border-b border-gray-200 pb-2">
+                        <h3 className="text-lg font-semibold text-gray-500 mb-3">Quick Links</h3>
+                        <ul className="flex flex-col gap-3">
+                            <li><button onClick={() => { navigate('/'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3 text-xl font-semibold"><FaHome className="text-xl" /> Home</button></li>
+                            <li><button onClick={() => { navigate('/shop'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3 text-xl font-semibold"><FaStore className="text-xl" /> Shop</button></li>
+                            <li><button onClick={() => { navigate('/offersalepage'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3 text-xl font-semibold"><FaTag className="text-xl" /> Sale</button></li>
                         </ul>
                     </li>
 
                     {/* Shop by Category */}
-                    <li className="mt-4">
-                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Shop by Category</h3>
+                    <li className="mt-4 border-b border-gray-200 pb-2">
+                        <h3 className="text-lg font-semibold text-gray-500 mb-3">Shop by Category</h3>
                         <div className="relative w-full">
                             <select
                                 className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none text-base"
@@ -316,8 +286,8 @@ export default function Navbar() {
                     </li>
 
                     {/* Account and Utilities */}
-                    <li className="mt-4">
-                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Account</h3>
+                    <li className="mt-4 border-b border-gray-200 pb-2">
+                        <h3 className="text-lg font-semibold text-gray-500 mb-3">Account</h3>
                         <ul>
                             {isLoggedIn ? (
                                 <>
@@ -337,11 +307,11 @@ export default function Navbar() {
                     </li>
 
                     {/* Support Contact */}
-                    <li className="mt-4 border-t border-gray-200 pt-4">
+                    <li className="mt-4 pt-4"> {/* Removed border-t and pt-4 if previous element has border-b */}
                         <h3 className="text-lg font-semibold text-gray-500 mb-2">Need Help?</h3>
                         <div className="flex items-center gap-2 text-base text-gray-700">
                             <FaPhoneAlt className="text-base text-gray-600" />
-                            <span>Call Us: <strong className="text-gray-900">95396-97664</strong></span>
+                            <span>Call Us: <strong className="text-gray-900">74920-43477</strong></span>
                         </div>
                     </li>
                 </ul>
