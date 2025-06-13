@@ -31,13 +31,11 @@ const WishlistPage = () => {
     };
 
     const handleAddToCart = (product) => {
-        // For simplicity, adding with default size/color.
-        // In a real app, you might want to open a modal for selection or navigate to product detail.
         const sizeToAdd = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'One Size';
         const colorToAdd = product.colors && product.colors.length > 0 ? product.colors[0] : 'Default Color';
 
-        addToCart(product, 1, sizeToAdd, colorToAdd); // Add product with quantity 1
-        toast.success(`${product.name} added to cart!`); // Notification
+        addToCart(product, 1, sizeToAdd, colorToAdd); 
+        
     };
 
     // Function to determine which price to display
