@@ -1,7 +1,8 @@
+// src/context/WishlistContext.js
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
-// Import your useAuth hook from your AuthContext file
-import { useAuth } from './AuthContext'; // <--- IMPORTANT: Adjust this import path if needed
+// Import useAuth from your AuthContext file. Make sure the path is correct!
+import { useAuth } from './AuthContext';
 
 const WishlistContext = createContext();
 
@@ -14,22 +15,23 @@ export const WishlistProvider = ({ children }) => {
   const [loadingWishlist, setLoadingWishlist] = useState(true);
   const [errorWishlist, setErrorWishlist] = useState(null);
 
-  // Get the token directly from your AuthContext
-  // This `token` state variable will automatically update when AuthContext's token changes
-  const { token } = useAuth(); // <--- This is the key change!
+  // Get the token from AuthContext. This `token` will change when login/logout happens in AuthContext.
+  const { token } = useAuth(); // <--- Key change: Get token from useAuth()
 
-  // Memoize the fetchWishlist function using useCallback.
-  // It will only re-create if `token` changes.
+  // Console log to observe the token value as it changes in WishlistContext
+  console.log('WishlistContext Render: Token observed from AuthContext:', token ? 'present' : 'null');
+
+  // Memoize the fetchWishlist function. It will only be re-created if `token` changes.
   const fetchWishlist = useCallback(async () => {
     setLoadingWishlist(true);
     setErrorWishlist(null);
+    console.log('fetchWishlist function called. Token value used for API:', token ? 'present' : 'null');
 
-    // If there's no token, it means no user is logged in or they logged out.
-    // So, clear the wishlist and stop.
+    // If there's no token, clear the wishlist and stop. This handles logout.
     if (!token) {
-      setWishlist([]); // Clear previous user's wishlist
+      setWishlist([]); // Clear the wishlist state
       setLoadingWishlist(false);
-      console.log("No token available, clearing wishlist."); // For debugging
+      console.log("No token in fetchWishlist. Wishlist cleared.");
       return;
     }
 
@@ -40,48 +42,38 @@ export const WishlistProvider = ({ children }) => {
         },
       };
       const response = await axios.get('https://loomibackend.onrender.com/api/v1/wishlist', config);
-      setWishlist(response.data.wishlist.products || []); // Assuming products array is returned
-      console.log("Wishlist fetched successfully for token:", token); // For debugging
+      setWishlist(response.data.wishlist.products || []);
+      console.log("Wishlist successfully fetched.");
     } catch (err) {
       console.error('Failed to fetch wishlist from backend:', err);
-      // Clear wishlist on error to prevent showing stale data if token becomes invalid
       setErrorWishlist('Failed to load wishlist. Please log in or refresh.');
-      setWishlist([]);
+      setWishlist([]); // Clear wishlist on error to avoid showing stale data
     } finally {
       setLoadingWishlist(false);
     }
-  }, [token]); // <--- Dependency array: fetchWishlist re-creates when `token` changes
+  }, [token]); // <--- Dependency array: `fetchWishlist` re-creates if `token` changes
 
-  // useEffect hook to call fetchWishlist.
-  // It now depends on `fetchWishlist` itself.
-  // Because `fetchWishlist` is memoized with `token` as its dependency,
-  // this useEffect will effectively re-run whenever the `token` changes.
+  // useEffect to trigger `fetchWishlist`.
+  // It depends on the memoized `fetchWishlist` function itself.
+  // Because `fetchWishlist` re-creates when `token` changes, this `useEffect` will also re-run.
   useEffect(() => {
-    console.log("WishlistContext useEffect triggered."); // For debugging
+    console.log('WishlistContext useEffect triggered.');
     fetchWishlist();
   }, [fetchWishlist]); // <--- Dependency array: re-run when `fetchWishlist` (and thus `token`) changes
 
-  // Removed getAuthToken function as it's no longer needed
-  // All functions below now use the `token` from `useAuth()` directly.
-
+  // All other functions (addToWishlist, removeFromWishlist) will now use the `token`
+  // from `useAuth()` directly, which is reactive.
   const addToWishlist = async (product) => {
-    if (!token) {
+    if (!token) { // Use the reactive `token`
       alert('Please log in to add items to your wishlist.');
       return false;
     }
-
     if (wishlist.some(item => item._id === product._id)) {
       console.log(`${product.name} is already in the wishlist.`);
       return false;
     }
-
     try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      };
+      const config = { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } };
       const response = await axios.post('https://loomibackend.onrender.com/api/v1/wishlist', { productId: product._id }, config);
       setWishlist(response.data.wishlist.products);
       console.log(`${product.name} added to wishlist.`);
@@ -94,17 +86,12 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const removeFromWishlist = async (productId) => {
-    if (!token) {
+    if (!token) { // Use the reactive `token`
       alert('Please log in to manage your wishlist.');
       return;
     }
-
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+      const config = { headers: { Authorization: `Bearer ${token}` } };
       const response = await axios.delete(`https://loomibackend.onrender.com/api/v1/wishlist/${productId}`, config);
       setWishlist(response.data.wishlist.products);
       console.log(`Product with ID ${productId} removed from wishlist.`);
@@ -125,7 +112,7 @@ export const WishlistProvider = ({ children }) => {
     isInWishlist,
     loadingWishlist,
     errorWishlist,
-    refetchWishlist: fetchWishlist, // Exposed for manual refresh if needed elsewhere
+    refetchWishlist: fetchWishlist, // Expose for manual refresh if needed
   };
 
   return (
