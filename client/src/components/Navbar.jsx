@@ -8,15 +8,16 @@ import {
     FaBars,
     FaTimes,
     FaPhoneAlt,
-    FaHome, // Added for mobile menu icons
-    FaStore, // Added for mobile menu icons
-    FaTag, // Added for mobile menu icons
-    FaList, // Added for mobile menu icons
-    FaSignInAlt, // Added for mobile menu icons
-    FaUserPlus, // Added for mobile menu icons
-    FaUserCircle, // Added for mobile menu icons
-    FaClipboardList, // Added for for orders icon
-    FaSignOutAlt // Added for logout icon
+    FaHome,
+    FaStore,
+    FaTag,
+    FaList,
+    FaSignInAlt,
+    FaUserPlus,
+    FaUserCircle,
+    FaClipboardList,
+    FaSignOutAlt,
+    FaFilter // Added for a potential filter/category toggle icon
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
@@ -26,6 +27,7 @@ import { useWishlist } from '../context/WishlistContext';
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isSecondaryMobileNavOpen, setIsSecondaryMobileNavOpen] = useState(false); // New state for secondary mobile nav
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const { cartItems } = useCart();
@@ -35,15 +37,20 @@ export default function Navbar() {
 
     const navigate = useNavigate();
     const dropdownRef = useRef(); // For desktop user dropdown
-    const mobileMenuRef = useRef(); // For clicking outside mobile menu
+    // mobileMenuRef is for the main drawer, secondaryMobileNavRef for the new one
+    const secondaryMobileNavRef = useRef();
 
     const handleCategoryChange = (e) => {
         const categoryName = e.target.value;
         setSelectedCategory(categoryName);
         navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
 
+        // Close all mobile menus if a category is selected
         if (isMobileMenuOpen) {
             closeMobileMenu();
+        }
+        if (isSecondaryMobileNavOpen) {
+            closeSecondaryMobileNav();
         }
     };
 
@@ -58,7 +65,18 @@ export default function Navbar() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Prevent body scrolling when mobile menu is open
+    // Close secondary mobile nav when clicking outside
+    useEffect(() => {
+        const handleClickOutsideSecondaryNav = (event) => {
+            if (secondaryMobileNavRef.current && !secondaryMobileNavRef.current.contains(event.target)) {
+                setIsSecondaryMobileNavOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutsideSecondaryNav);
+        return () => document.removeEventListener('mousedown', handleClickOutsideSecondaryNav);
+    }, []);
+
+    // Prevent body scrolling when main mobile menu is open
     useEffect(() => {
         if (isMobileMenuOpen) {
             document.body.style.overflow = 'hidden';
@@ -71,6 +89,7 @@ export default function Navbar() {
     }, [isMobileMenuOpen]);
 
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
+    const closeSecondaryMobileNav = () => setIsSecondaryMobileNavOpen(false);
 
     return (
         <>
@@ -115,7 +134,7 @@ export default function Navbar() {
                         <div className="flex items-center gap-3 sm:gap-4 lg:gap-7">
                             {/* Desktop User Dropdown */}
                             {isLoggedIn ? (
-                                <div className="relative hidden md:block" ref={dropdownRef}> {/* Hidden on xs, sm screens */}
+                                <div className="relative hidden md:block" ref={dropdownRef}>
                                     <button
                                         onClick={() => setIsDropdownOpen((prev) => !prev)}
                                         className="flex items-center gap-2 text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
@@ -194,10 +213,26 @@ export default function Navbar() {
                                 <span className="hidden sm:inline font-medium text-sm">Cart</span>
                             </button>
 
-                            {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
+                            {/* Mobile Secondary Nav Toggle Button */}
+                            {/* This button will open the new "Shop Home Sale" bar */}
                             <button
                                 className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
-                                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                                onClick={() => {
+                                    setIsSecondaryMobileNavOpen((prev) => !prev);
+                                    closeMobileMenu(); // Ensure main menu is closed
+                                }}
+                                aria-label={isSecondaryMobileNavOpen ? "Hide quick links" : "Show quick links"}
+                            >
+                                <FaFilter className="text-2xl" /> {/* Using FaFilter or similar for quick links */}
+                            </button>
+
+                            {/* Main Mobile Menu Toggle Button (Hamburger / Close Icon) */}
+                            <button
+                                className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
+                                onClick={() => {
+                                    setIsMobileMenuOpen((prev) => !prev);
+                                    closeSecondaryMobileNav(); // Ensure secondary menu is closed
+                                }}
                                 aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                             >
                                 {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
@@ -222,7 +257,44 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile Menu Drawer */}
+            {/* New: Secondary Mobile Navigation (Shop, Home, Sale) */}
+            {isSecondaryMobileNavOpen && (
+                <div
+                    ref={secondaryMobileNavRef}
+                    className="fixed top-[--navbar-height] left-0 right-0 z-40 bg-white shadow-md lg:hidden"
+                    style={{ '--navbar-height': 'calc(var(--tw-h-16) + var(--tw-py-5))' }} /* Adjust based on actual header height */
+                >
+                    <ul className="flex justify-around items-center py-3 border-b border-gray-200">
+                        <li>
+                            <button
+                                onClick={() => { navigate('/'); closeSecondaryMobileNav(); }}
+                                className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-sm font-medium"
+                            >
+                                <FaHome className="text-xl mb-1" /> Home
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                onClick={() => { navigate('/shop'); closeSecondaryMobileNav(); }}
+                                className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-sm font-medium"
+                            >
+                                <FaStore className="text-xl mb-1" /> Shop
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                onClick={() => { navigate('/offersalepage'); closeSecondaryMobileNav(); }}
+                                className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-sm font-medium"
+                            >
+                                <FaTag className="text-xl mb-1" /> Sale
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            )}
+
+
+            {/* Main Mobile Menu Drawer */}
             {/* Overlay */}
             {isMobileMenuOpen && (
                 <div
@@ -233,7 +305,6 @@ export default function Navbar() {
 
             {/* Mobile Menu Drawer Content */}
             <nav
-                ref={mobileMenuRef} // Assign ref to the mobile menu content
                 className={`
                     fixed inset-y-0 right-0 z-40 bg-white shadow-lg
                     transform transition-transform ease-in-out duration-300
@@ -252,9 +323,9 @@ export default function Navbar() {
 
                 {/* Mobile Menu Items - Grouped for clarity */}
                 <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
-                    {/* Main Navigation */}
+                    {/* Main Navigation (These are now the same as the secondary nav for consistency, but kept here for fallback) */}
                     <li>
-                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Navigation</h3>
+                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Main Navigation</h3>
                         <ul>
                             <li><button onClick={() => { navigate('/'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaHome className="text-lg" /> Home</button></li>
                             <li><button onClick={() => { navigate('/shop'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaStore className="text-lg" /> Shop</button></li>
@@ -310,7 +381,7 @@ export default function Navbar() {
                         <h3 className="text-lg font-semibold text-gray-500 mb-2">Need Help?</h3>
                         <div className="flex items-center gap-2 text-base text-gray-700">
                             <FaPhoneAlt className="text-base text-gray-600" />
-                            <span>Call Us: <strong className="text-gray-900">74920-43477</strong></span>
+                            <span>Call Us: <strong className="text-gray-900">95396-97664</strong></span>
                         </div>
                     </li>
                 </ul>
