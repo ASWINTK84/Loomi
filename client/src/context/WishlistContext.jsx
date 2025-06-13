@@ -1,5 +1,8 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
+// Assuming you have an AuthContext that provides the token
+// Adjust the import path based on your project structure
+import { useAuth } from './AuthContext'; // <--- IMPORTANT: Adjust this path
 
 const WishlistContext = createContext();
 
@@ -12,46 +15,46 @@ export const WishlistProvider = ({ children }) => {
   const [loadingWishlist, setLoadingWishlist] = useState(true);
   const [errorWishlist, setErrorWishlist] = useState(null);
 
-  // You would typically get the user token from authentication context
-  // For demonstration, let's assume you have a way to get the token
-  const getAuthToken = () => {
-    // Replace with your actual logic to get the auth token (e.g., from localStorage, AuthContext)
-    return localStorage.getItem('token'); // Example: get token from localStorage
-  };
+  // Get the authentication token from your AuthContext
+  const { token } = useAuth(); // <--- Get token from AuthContext
 
-  // Fetch wishlist from backend
+  // useCallback to memoize fetchWishlist to prevent unnecessary re-creations
+  const fetchWishlist = useCallback(async () => {
+    setLoadingWishlist(true);
+    setErrorWishlist(null);
+
+    // If no token is present (e.g., after logout), clear the wishlist
+    if (!token) {
+      setWishlist([]);
+      setLoadingWishlist(false);
+      return;
+    }
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      // Use your deployed backend URL
+      const response = await axios.get('https://loomibackend.onrender.com/api/v1/wishlist', config);
+      setWishlist(response.data.wishlist.products || []); // Assuming products array is returned
+    } catch (err) {
+      console.error('Failed to fetch wishlist from backend:', err);
+      // More specific error handling could be added here based on err.response.status
+      setErrorWishlist('Failed to load wishlist. Please log in or refresh.');
+      setWishlist([]); // Clear wishlist on error to avoid showing stale data
+    } finally {
+      setLoadingWishlist(false);
+    }
+  }, [token]); // Dependency array: Re-run when 'token' changes
+
+  // Fetch wishlist on component mount and whenever the token changes
   useEffect(() => {
-    const fetchWishlist = async () => {
-      setLoadingWishlist(true);
-      setErrorWishlist(null);
-      const token = getAuthToken();
-      if (!token) {
-        setWishlist([]); // No token, no authenticated wishlist
-        setLoadingWishlist(false);
-        return;
-      }
-
-      try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await axios.get('https://loomibackend.onrender.com/api/v1/wishlist', config);
-        setWishlist(response.data.wishlist.products || []); // Assuming products array is returned
-      } catch (err) {
-        console.error('Failed to fetch wishlist from backend:', err);
-        setErrorWishlist('Failed to load wishlist. Please log in.');
-        setWishlist([]); // Clear wishlist on error
-      } finally {
-        setLoadingWishlist(false);
-      }
-    };
     fetchWishlist();
-  }, []); // Re-fetch when user token changes or on mount
+  }, [fetchWishlist]); // Dependency array: depends on the memoized fetchWishlist function
 
   const addToWishlist = async (product) => {
-    const token = getAuthToken();
     if (!token) {
       alert('Please log in to add items to your wishlist.');
       return false;
@@ -59,7 +62,7 @@ export const WishlistProvider = ({ children }) => {
 
     if (wishlist.some(item => item._id === product._id)) {
       console.log(`${product.name} is already in the wishlist.`);
-      return false;
+      return false; // Already in wishlist, no action needed
     }
 
     try {
@@ -81,7 +84,6 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const removeFromWishlist = async (productId) => {
-    const token = getAuthToken();
     if (!token) {
       alert('Please log in to manage your wishlist.');
       return;
@@ -94,7 +96,7 @@ export const WishlistProvider = ({ children }) => {
         },
       };
       const response = await axios.delete(`https://loomibackend.onrender.com/api/v1/wishlist/${productId}`, config);
-      setWishlist(response.data.wishlist.products); // Update state with the new wishlist from backend
+      setWishlist(response.data.wishlist.products); 
       console.log(`Product with ID ${productId} removed from wishlist.`);
     } catch (err) {
       console.error('Failed to remove product from wishlist:', err);
@@ -113,6 +115,7 @@ export const WishlistProvider = ({ children }) => {
     isInWishlist,
     loadingWishlist,
     errorWishlist,
+    refetchWishlist: fetchWishlist 
   };
 
   return (
