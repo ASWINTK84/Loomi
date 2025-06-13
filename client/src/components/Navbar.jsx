@@ -19,7 +19,7 @@ import {
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
-import { useCart } from '../context/CartItemsContext'; // Assuming correct context name
+import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar() {
