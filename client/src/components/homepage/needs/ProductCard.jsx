@@ -58,6 +58,7 @@ const ProductCard = ({ product, isListView = false }) => {
 
     useEffect(() => {
         if (isQuickViewOpen) {
+            // Re-initialize Quick View selections when modal opens to ensure they match the first available option
             if (product.sizes && product.sizes.length > 0) {
                 setSelectedQuickViewSize(product.sizes[0]);
             } else {
@@ -109,36 +110,35 @@ const ProductCard = ({ product, isListView = false }) => {
     const isLightColor = (color) => {
         if (!color || typeof color !== 'string') return true; // Default to light if color is invalid
 
-        // Simple named color mapping for common colors
+        let hexColor = color.toLowerCase().trim();
+
+        // Standardize common color names to hex for reliable processing
         const namedColors = {
             black: '#000000', white: '#FFFFFF', red: '#FF0000', green: '#008000', blue: '#0000FF',
             yellow: '#FFFF00', cyan: '#00FFFF', magenta: '#FF00FF', gray: '#808080',
             maroon: '#800000', olive: '#808000', purple: '#800080', teal: '#008080',
             navy: '#000080', silver: '#C0C0C0', gold: '#FFD700', orange: '#FFA500',
             pink: '#FFC0CB', brown: '#A52A2A', violet: '#EE82EE', indigo: '#4B0082',
-            lime: '#00FF00', // Added some more common ones
-            aqua: '#00FFFF',
-            fuchsia: '#FF00FF',
-            silver: '#C0C0C0',
-            teal: '#008080',
-            navy: '#000080',
+            lime: '#00FF00', aqua: '#00FFFF', fuchsia: '#FF00FF',
+            darkgray: '#A9A9A9', lightgray: '#D3D3D3', darkgrey: '#A9A9A9', lightgrey: '#D3D3D3'
         };
 
-        let hexColor = color.startsWith('#') ? color : namedColors[color.toLowerCase()];
-
-        // If it's still not a hex, try to parse it as RGB (e.g., "rgb(255, 0, 0)")
-        if (!hexColor && color.startsWith('rgb')) {
-            const rgbValues = color.match(/\d+/g).map(Number);
-            if (rgbValues.length === 3) {
-                hexColor = '#' +
-                    ('0' + rgbValues[0].toString(16)).slice(-2) +
-                    ('0' + rgbValues[1].toString(16)).slice(-2) +
-                    ('0' + rgbValues[2].toString(16)).slice(-2);
+        if (namedColors[hexColor]) {
+            hexColor = namedColors[hexColor];
+        } else if (hexColor.startsWith('rgb')) {
+            const rgbValues = hexColor.match(/\d+/g)?.map(Number);
+            if (rgbValues && rgbValues.length >= 3) {
+                // Convert RGB to HEX
+                hexColor = '#' + rgbValues.slice(0, 3).map(c => ('0' + c.toString(16)).slice(-2)).join('');
+            } else {
+                return false; // Invalid RGB format
             }
         }
 
-        if (!hexColor) {
-            return false; // Cannot determine color, assume dark for safety
+        if (!hexColor.startsWith('#') || (hexColor.length !== 4 && hexColor.length !== 7)) {
+            // Not a valid hex color after conversion attempts
+            console.warn(`isLightColor: Could not parse color "${color}". Assuming dark for safety.`);
+            return false;
         }
 
         let r, g, b;
@@ -146,18 +146,16 @@ const ProductCard = ({ product, isListView = false }) => {
             r = parseInt(hexColor[1] + hexColor[1], 16);
             g = parseInt(hexColor[2] + hexColor[2], 16);
             b = parseInt(hexColor[3] + hexColor[3], 16);
-        } else if (hexColor.length === 7) { // #RRGGBB long form
+        } else { // #RRGGBB long form
             r = parseInt(hexColor.substring(1, 3), 16);
             g = parseInt(hexColor.substring(3, 5), 16);
             b = parseInt(hexColor.substring(5, 7), 16);
-        } else {
-            return false; // Invalid hex color
         }
 
-        // Calculate YIQ value to determine perceived brightness
-        // YIQ formula: (R*299 + G*587 + B*114) / 1000
-        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-        return (yiq >= 170); // A common threshold for light vs. dark colors
+        // Calculate Luma (perceived brightness)
+        // A more accurate formula than YIQ for determining perceived brightness
+        const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luma >= 0.5; // Common threshold for light vs. dark (0.5 is midpoint, 0.7 for strong contrast)
     };
 
     // Handles Add to Cart action from the main ProductCard (uses selectedCardSize/Color)
@@ -179,7 +177,6 @@ const ProductCard = ({ product, isListView = false }) => {
         }
 
         addToCart(product, 1, sizeToAddToCart, colorToAddToCart);
-        // toast.success(`${product.name} added to cart!`);
     };
 
     // Handles Add to Cart action from the Quick View Modal (uses selectedQuickViewSize/Color)
@@ -198,7 +195,6 @@ const ProductCard = ({ product, isListView = false }) => {
         }
 
         addToCart(product, 1, sizeToAddToCart, colorToAddToCart);
-        // toast.success(`${product.name} added to cart!`);
         setIsQuickViewOpen(false); // Close modal after successful add
     };
 
@@ -221,7 +217,7 @@ const ProductCard = ({ product, isListView = false }) => {
             {/* Product Card Container */}
             <div
                 className={`group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden
-                         ${isListView ? 'flex flex-col md:flex-row items-stretch p-4 gap-4' : 'flex flex-col p-4'}`}
+                            ${isListView ? 'flex flex-col md:flex-row items-stretch p-4 gap-4' : 'flex flex-col p-4'}`}
             >
                 {/* Product Image and Offer Badge */}
                 {/* Link to product detail page */}
@@ -293,10 +289,10 @@ const ProductCard = ({ product, isListView = false }) => {
                                         key={i}
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedCardColor(color); }}
                                         className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-200
-                                                 ${selectedCardColor === color
-                                                    ? 'border-blue-600 ring-2 ring-blue-300'
-                                                    : 'border-gray-300 hover:border-blue-400'
-                                                }`}
+                                                    ${selectedCardColor === color
+                                                        ? 'border-blue-600 ring-2 ring-blue-300'
+                                                        : 'border-gray-300 hover:border-blue-400'
+                                                    }`}
                                         style={{ backgroundColor: color }}
                                         title={color}
                                     >
@@ -319,10 +315,10 @@ const ProductCard = ({ product, isListView = false }) => {
                                         key={i}
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedCardSize(size); }}
                                         className={`px-3 py-1 rounded-md border-2 text-xs font-medium transition-all duration-200
-                                                 ${selectedCardSize === size
-                                                    ? 'bg-blue-600 text-white border-blue-600'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                                }`}
+                                                    ${selectedCardSize === size
+                                                        ? 'bg-blue-600 text-white border-blue-600'
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                    }`}
                                     >
                                         {size.toUpperCase()}
                                     </button>
@@ -343,15 +339,18 @@ const ProductCard = ({ product, isListView = false }) => {
                 </div>
 
                 {/* Top-Right Action Buttons (Wishlist, Quick View) */}
-                {/* These buttons are relatively positioned in list view, and absolutely positioned (on hover) in grid view */}
+                {/* Updated for mobile visibility: Always visible on small screens, hover on larger screens in grid view. */}
                 <div className={`absolute top-4 right-4 z-20 flex flex-col space-y-2 transition-opacity duration-300
-                                 ${isListView ? 'relative top-auto right-auto mt-4 md:mt-0' : 'opacity-0 group-hover:opacity-100'}`}
+                                 ${isListView 
+                                    ? 'relative top-auto right-auto mt-4 md:mt-0' // List view: always relative and visible
+                                    : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100' // Grid view: always visible on small screens, hover on larger
+                                 }`}
                 >
                     {/* Wishlist Button */}
                     <button
                         onClick={handleWishlistClick}
                         className={`p-2 rounded-full shadow-md transition-all duration-200
-                                     ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                    ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                         aria-label={isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                         title={isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                     >
@@ -438,10 +437,10 @@ const ProductCard = ({ product, isListView = false }) => {
                                             key={i}
                                             onClick={() => setSelectedQuickViewColor(color)}
                                             className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center transition-all duration-200 shadow-sm
-                                                     ${selectedQuickViewColor === color
-                                                        ? 'border-blue-600 ring-2 ring-blue-300'
-                                                        : 'border-gray-300 hover:border-blue-400'
-                                                    }`}
+                                                        ${selectedQuickViewColor === color
+                                                            ? 'border-blue-600 ring-2 ring-blue-300'
+                                                            : 'border-gray-300 hover:border-blue-400'
+                                                        }`}
                                             style={{ backgroundColor: color }}
                                             title={color}
                                         >
@@ -464,10 +463,10 @@ const ProductCard = ({ product, isListView = false }) => {
                                             key={i}
                                             onClick={() => setSelectedQuickViewSize(size)}
                                             className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-md border-2 text-sm font-medium transition-all duration-200 shadow-sm
-                                                     ${selectedQuickViewSize === size
-                                                        ? 'bg-blue-600 text-white border-blue-600'
-                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                                    }`}
+                                                        ${selectedQuickViewSize === size
+                                                            ? 'bg-blue-600 text-white border-blue-600'
+                                                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                        }`}
                                         >
                                             {size.toUpperCase()}
                                         </button>
