@@ -25,7 +25,6 @@ import { useWishlist } from '../context/WishlistContext';
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // Removed isSecondaryMobileNavOpen state - it will always be visible on mobile
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const { cartItems } = useCart();
@@ -45,7 +44,6 @@ export default function Navbar() {
         if (isMobileMenuOpen) {
             closeMobileMenu();
         }
-        // No need to close secondary mobile nav as it's always visible
     };
 
     // Close desktop user dropdown when clicking outside
@@ -286,18 +284,8 @@ export default function Navbar() {
 
                 {/* Mobile Menu Items - Grouped for clarity */}
                 <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
-                    {/* Main Navigation (These are redundant if the always-visible nav is there, but can serve as larger links for completeness or if it's the only nav) */}
-                    <li>
-                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Navigation</h3>
-                        <ul>
-                            <li><button onClick={() => { navigate('/'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaHome className="text-lg" /> Home</button></li>
-                            <li><button onClick={() => { navigate('/shop'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaStore className="text-lg" /> Shop</button></li>
-                            <li><button onClick={() => { navigate('/offersalepage'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaTag className="text-lg" /> Sale</button></li>
-                        </ul>
-                    </li>
-
                     {/* Shop by Category */}
-                    <li className="mt-4">
+                    <li>
                         <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Shop by Category</h3>
                         <div className="relative w-full">
                             <select
