@@ -3,7 +3,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useNavigate } from 'react-router-dom';
 import { FaHeartBroken, FaTrash, FaShoppingCart } from 'react-icons/fa'; // Added FaShoppingCart
 import { useProducts } from '../context/ProductContext';
-import { useCart } from '../context/CartContext'; // Import useCart context
+import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify'; // Import toast for notifications
 
 const WishlistPage = () => {
