@@ -54,7 +54,7 @@ const ProductCard = ({ product, isListView = false }) => {
         } else {
             setSelectedQuickViewColor('Default Color');
         }
-    }, [product]); 
+    }, [product]);
 
     useEffect(() => {
         if (isQuickViewOpen) {
@@ -119,7 +119,6 @@ const ProductCard = ({ product, isListView = false }) => {
             lime: '#00FF00', // Added some more common ones
             aqua: '#00FFFF',
             fuchsia: '#FF00FF',
-            olive: '#808000',
             silver: '#C0C0C0',
             teal: '#008080',
             navy: '#000080',
@@ -222,12 +221,12 @@ const ProductCard = ({ product, isListView = false }) => {
             {/* Product Card Container */}
             <div
                 className={`group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden
-                         ${isListView ? 'flex flex-row items-stretch p-4 gap-4' : 'flex flex-col p-4'}`}
+                         ${isListView ? 'flex flex-col md:flex-row items-stretch p-4 gap-4' : 'flex flex-col p-4'}`}
             >
                 {/* Product Image and Offer Badge */}
                 {/* Link to product detail page */}
-                <Link to={`/product/${product._id}`} className={`${isListView ? 'w-1/3 flex-shrink-0' : 'block'}`}>
-                    <div className={`${isListView ? 'w-full h-32' : 'h-48'} mb-4 flex items-center justify-center relative`}>
+                <Link to={`/product/${product._id}`} className={`${isListView ? 'w-full md:w-1/3 flex-shrink-0' : 'block'}`}>
+                    <div className={`${isListView ? 'w-full h-48 md:h-32' : 'h-48'} mb-4 flex items-center justify-center relative`}>
                         <img
                             src={imageUrl}
                             alt={product.name || 'Product image'}
@@ -294,10 +293,10 @@ const ProductCard = ({ product, isListView = false }) => {
                                         key={i}
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedCardColor(color); }}
                                         className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-200
-                                                    ${selectedCardColor === color
-                                                        ? 'border-blue-600 ring-2 ring-blue-300'
-                                                        : 'border-gray-300 hover:border-blue-400'
-                                                    }`}
+                                                 ${selectedCardColor === color
+                                                    ? 'border-blue-600 ring-2 ring-blue-300'
+                                                    : 'border-gray-300 hover:border-blue-400'
+                                                }`}
                                         style={{ backgroundColor: color }}
                                         title={color}
                                     >
@@ -320,10 +319,10 @@ const ProductCard = ({ product, isListView = false }) => {
                                         key={i}
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedCardSize(size); }}
                                         className={`px-3 py-1 rounded-md border-2 text-xs font-medium transition-all duration-200
-                                                    ${selectedCardSize === size
-                                                        ? 'bg-blue-600 text-white border-blue-600'
-                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                                    }`}
+                                                 ${selectedCardSize === size
+                                                    ? 'bg-blue-600 text-white border-blue-600'
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                }`}
                                     >
                                         {size.toUpperCase()}
                                     </button>
@@ -346,13 +345,13 @@ const ProductCard = ({ product, isListView = false }) => {
                 {/* Top-Right Action Buttons (Wishlist, Quick View) */}
                 {/* These buttons are relatively positioned in list view, and absolutely positioned (on hover) in grid view */}
                 <div className={`absolute top-4 right-4 z-20 flex flex-col space-y-2 transition-opacity duration-300
-                             ${isListView ? 'relative top-auto right-auto mt-4' : 'opacity-0 group-hover:opacity-100'}`}
+                                 ${isListView ? 'relative top-auto right-auto mt-4 md:mt-0' : 'opacity-0 group-hover:opacity-100'}`}
                 >
                     {/* Wishlist Button */}
                     <button
                         onClick={handleWishlistClick}
                         className={`p-2 rounded-full shadow-md transition-all duration-200
-                                    ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                     ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                         aria-label={isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                         title={isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                     >
@@ -384,7 +383,7 @@ const ProductCard = ({ product, isListView = false }) => {
                     aria-modal="true"
                 >
                     <div
-                        className="bg-white rounded-xl p-6 shadow-2xl max-w-lg w-full relative max-h-[90vh] overflow-y-auto transform scale-95 animate-scaleIn"
+                        className="bg-white rounded-xl p-6 shadow-2xl max-w-sm sm:max-w-lg w-full relative max-h-[95vh] overflow-y-auto transform scale-95 animate-scaleIn"
                         onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside
                     >
                         {/* Close button for the modal */}
@@ -397,24 +396,24 @@ const ProductCard = ({ product, isListView = false }) => {
                             <FaTimes />
                         </button>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mb-3">{product.name}</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{product.name}</h2>
 
                         {/* Price Display in Modal */}
-                        <div className="flex items-baseline gap-3 mb-4">
+                        <div className="flex items-baseline gap-2 sm:gap-3 mb-4">
                             {currentOffer ? (
                                 <>
-                                    <span className="text-3xl font-bold text-green-600">
+                                    <span className="text-2xl sm:text-3xl font-bold text-green-600">
                                         {formatPrice(displayPrice)}
                                     </span>
-                                    <span className="line-through text-gray-500 text-xl">
+                                    <span className="line-through text-gray-500 text-base sm:text-xl">
                                         {formatPrice(product.price)}
                                     </span>
-                                    <span className="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                    <span className="bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">
                                         {currentOffer.offerPercentage}% OFF
                                     </span>
                                 </>
                             ) : (
-                                <span className="text-3xl font-bold text-gray-900">
+                                <span className="text-2xl sm:text-3xl font-bold text-gray-900">
                                     {formatPrice(product.price)}
                                 </span>
                             )}
@@ -424,30 +423,30 @@ const ProductCard = ({ product, isListView = false }) => {
                         <img
                             src={imageUrl}
                             alt={product.name || 'Product image'}
-                            className="mb-4 max-h-64 mx-auto object-contain w-full rounded-lg border border-gray-200 shadow-sm"
+                            className="mb-4 max-h-48 sm:max-h-64 mx-auto object-contain w-full rounded-lg border border-gray-200 shadow-sm"
                         />
                         {/* Product Description in Modal */}
-                        <p className="mb-5 text-gray-700 leading-relaxed">{product.description || 'No description available.'}</p>
+                        <p className="mb-5 text-gray-700 leading-relaxed text-sm sm:text-base">{product.description || 'No description available.'}</p>
 
                         {/* Interactive Color Selector in Modal */}
                         {product.colors && product.colors.length > 0 && (
                             <div className="mb-5">
-                                <label className="block text-md font-medium text-gray-800 mb-2">Select Color:</label>
-                                <div className="flex flex-wrap gap-3">
+                                <label className="block text-sm sm:text-md font-medium text-gray-800 mb-2">Select Color:</label>
+                                <div className="flex flex-wrap gap-2 sm:gap-3">
                                     {product.colors.map((color, i) => (
                                         <button
                                             key={i}
                                             onClick={() => setSelectedQuickViewColor(color)}
-                                            className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all duration-200 shadow-sm
-                                                        ${selectedQuickViewColor === color
-                                                            ? 'border-blue-600 ring-2 ring-blue-300'
-                                                            : 'border-gray-300 hover:border-blue-400'
-                                                        }`}
+                                            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center transition-all duration-200 shadow-sm
+                                                     ${selectedQuickViewColor === color
+                                                        ? 'border-blue-600 ring-2 ring-blue-300'
+                                                        : 'border-gray-300 hover:border-blue-400'
+                                                    }`}
                                             style={{ backgroundColor: color }}
                                             title={color}
                                         >
                                             {selectedQuickViewColor === color && (
-                                                <span className={`${isLightColor(color) ? 'text-gray-800' : 'text-white'} text-lg`}>&#10003;</span> // Checkmark
+                                                <span className={`${isLightColor(color) ? 'text-gray-800' : 'text-white'} text-base sm:text-lg`}>&#10003;</span> // Checkmark
                                             )}
                                         </button>
                                     ))}
@@ -458,17 +457,17 @@ const ProductCard = ({ product, isListView = false }) => {
                         {/* Interactive Size Selector in Modal */}
                         {product.sizes && product.sizes.length > 0 && (
                             <div className="mb-6">
-                                <label className="block text-md font-medium text-gray-800 mb-2">Select Size:</label>
-                                <div className="flex flex-wrap gap-3">
+                                <label className="block text-sm sm:text-md font-medium text-gray-800 mb-2">Select Size:</label>
+                                <div className="flex flex-wrap gap-2 sm:gap-3">
                                     {product.sizes.map((size, i) => (
                                         <button
                                             key={i}
                                             onClick={() => setSelectedQuickViewSize(size)}
-                                            className={`px-4 py-2 rounded-md border-2 text-sm font-medium transition-all duration-200 shadow-sm
-                                                        ${selectedQuickViewSize === size
-                                                            ? 'bg-blue-600 text-white border-blue-600'
-                                                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                                        }`}
+                                            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-md border-2 text-sm font-medium transition-all duration-200 shadow-sm
+                                                     ${selectedQuickViewSize === size
+                                                        ? 'bg-blue-600 text-white border-blue-600'
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                    }`}
                                         >
                                             {size.toUpperCase()}
                                         </button>
@@ -481,13 +480,13 @@ const ProductCard = ({ product, isListView = false }) => {
                         <div className="flex flex-col space-y-3">
                             <button
                                 onClick={handleAddToCartFromQuickView}
-                                className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-lg shadow-md transition-colors duration-200 w-full text-lg font-semibold flex items-center justify-center"
+                                className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 sm:py-3 rounded-lg shadow-md transition-colors duration-200 w-full text-base sm:text-lg font-semibold flex items-center justify-center"
                             >
                                 <FaShoppingCart className="mr-2" /> Add to Cart
                             </button>
                             <Link
                                 to={`/product/${product._id}`}
-                                className="text-center text-blue-700 border border-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors duration-200 block w-full text-md font-medium"
+                                className="text-center text-blue-700 border border-blue-700 px-4 py-2 sm:py-2.5 rounded-lg hover:bg-blue-50 transition-colors duration-200 block w-full text-sm sm:text-md font-medium"
                                 onClick={() => setIsQuickViewOpen(false)} // Close modal when navigating to full details
                             >
                                 View Full Details
