@@ -1,8 +1,5 @@
-// src/context/WishlistContext.js
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
-// Import useAuth from your AuthContext file. Make sure the path is correct!
-import { useAuth } from './AuthContext';
 
 const WishlistContext = createContext();
 
@@ -15,67 +12,65 @@ export const WishlistProvider = ({ children }) => {
   const [loadingWishlist, setLoadingWishlist] = useState(true);
   const [errorWishlist, setErrorWishlist] = useState(null);
 
-  // Get the token from AuthContext. This `token` will change when login/logout happens in AuthContext.
-  const { token } = useAuth(); // <--- Key change: Get token from useAuth()
+  // You would typically get the user token from authentication context
+  // For demonstration, let's assume you have a way to get the token
+  const getAuthToken = () => {
+    // Replace with your actual logic to get the auth token (e.g., from localStorage, AuthContext)
+    return localStorage.getItem('token'); // Example: get token from localStorage
+  };
 
-  // Console log to observe the token value as it changes in WishlistContext
-  console.log('WishlistContext Render: Token observed from AuthContext:', token ? 'present' : 'null');
+  // Fetch wishlist from backend
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      setLoadingWishlist(true);
+      setErrorWishlist(null);
+      const token = getAuthToken();
+      if (!token) {
+        setWishlist([]); // No token, no authenticated wishlist
+        setLoadingWishlist(false);
+        return;
+      }
 
-  // Memoize the fetchWishlist function. It will only be re-created if `token` changes.
-  const fetchWishlist = useCallback(async () => {
-    setLoadingWishlist(true);
-    setErrorWishlist(null);
-    console.log('fetchWishlist function called. Token value used for API:', token ? 'present' : 'null');
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get('https://loomibackend.onrender.com/api/v1/wishlist', config);
+        setWishlist(response.data.wishlist.products || []); // Assuming products array is returned
+      } catch (err) {
+        console.error('Failed to fetch wishlist from backend:', err);
+        setErrorWishlist('Failed to load wishlist. Please log in.');
+        setWishlist([]); // Clear wishlist on error
+      } finally {
+        setLoadingWishlist(false);
+      }
+    };
+    fetchWishlist();
+  }, []); // Re-fetch when user token changes or on mount
 
-    // If there's no token, clear the wishlist and stop. This handles logout.
+  const addToWishlist = async (product) => {
+    const token = getAuthToken();
     if (!token) {
-      setWishlist([]); // Clear the wishlist state
-      setLoadingWishlist(false);
-      console.log("No token in fetchWishlist. Wishlist cleared.");
-      return;
+      alert('Please log in to add items to your wishlist.');
+      return false;
+    }
+
+    if (wishlist.some(item => item._id === product._id)) {
+      console.log(`${product.name} is already in the wishlist.`);
+      return false;
     }
 
     try {
       const config = {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.get('https://loomibackend.onrender.com/api/v1/wishlist', config);
-      setWishlist(response.data.wishlist.products || []);
-      console.log("Wishlist successfully fetched.");
-    } catch (err) {
-      console.error('Failed to fetch wishlist from backend:', err);
-      setErrorWishlist('Failed to load wishlist. Please log in or refresh.');
-      setWishlist([]); // Clear wishlist on error to avoid showing stale data
-    } finally {
-      setLoadingWishlist(false);
-    }
-  }, [token]); // <--- Dependency array: `fetchWishlist` re-creates if `token` changes
-
-  // useEffect to trigger `fetchWishlist`.
-  // It depends on the memoized `fetchWishlist` function itself.
-  // Because `fetchWishlist` re-creates when `token` changes, this `useEffect` will also re-run.
-  useEffect(() => {
-    console.log('WishlistContext useEffect triggered.');
-    fetchWishlist();
-  }, [fetchWishlist]); // <--- Dependency array: re-run when `fetchWishlist` (and thus `token`) changes
-
-  // All other functions (addToWishlist, removeFromWishlist) will now use the `token`
-  // from `useAuth()` directly, which is reactive.
-  const addToWishlist = async (product) => {
-    if (!token) { // Use the reactive `token`
-      alert('Please log in to add items to your wishlist.');
-      return false;
-    }
-    if (wishlist.some(item => item._id === product._id)) {
-      console.log(`${product.name} is already in the wishlist.`);
-      return false;
-    }
-    try {
-      const config = { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } };
       const response = await axios.post('https://loomibackend.onrender.com/api/v1/wishlist', { productId: product._id }, config);
-      setWishlist(response.data.wishlist.products);
+      setWishlist(response.data.wishlist.products); // Update state with the new wishlist from backend
       console.log(`${product.name} added to wishlist.`);
       return true;
     } catch (err) {
@@ -86,14 +81,20 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const removeFromWishlist = async (productId) => {
-    if (!token) { // Use the reactive `token`
+    const token = getAuthToken();
+    if (!token) {
       alert('Please log in to manage your wishlist.');
       return;
     }
+
     try {
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
       const response = await axios.delete(`https://loomibackend.onrender.com/api/v1/wishlist/${productId}`, config);
-      setWishlist(response.data.wishlist.products);
+      setWishlist(response.data.wishlist.products); // Update state with the new wishlist from backend
       console.log(`Product with ID ${productId} removed from wishlist.`);
     } catch (err) {
       console.error('Failed to remove product from wishlist:', err);
@@ -112,7 +113,6 @@ export const WishlistProvider = ({ children }) => {
     isInWishlist,
     loadingWishlist,
     errorWishlist,
-    refetchWishlist: fetchWishlist, // Expose for manual refresh if needed
   };
 
   return (
