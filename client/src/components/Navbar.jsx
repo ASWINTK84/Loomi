@@ -11,7 +11,6 @@ import {
     FaHome,
     FaStore,
     FaTag,
-    FaList,
     FaSignInAlt,
     FaUserPlus,
     FaUserCircle,
@@ -20,13 +19,13 @@ import {
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/CartItemsContext'; // Assuming correct context name
 import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // Removed isSecondaryMobileNavOpen state - no longer needed
+    // Removed isSecondaryMobileNavOpen state - it will always be visible on mobile
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const { cartItems } = useCart();
@@ -42,10 +41,11 @@ export default function Navbar() {
         setSelectedCategory(categoryName);
         navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
 
-        // Always close main mobile menu if a category is selected
+        // Close main mobile menu if a category is selected
         if (isMobileMenuOpen) {
             closeMobileMenu();
         }
+        // No need to close secondary mobile nav as it's always visible
     };
 
     // Close desktop user dropdown when clicking outside
@@ -79,7 +79,7 @@ export default function Navbar() {
             <div className="w-full font-sans sticky top-0 z-50 bg-white shadow-sm">
                 <div className="bg-blue-50">
                     <div className="container mx-auto flex items-center justify-between px-3 py-5 lg:px-4 lg:py-6">
-                        {/* Logo */}
+                        {/* Logo - Increased text size */}
                         <div
                             onClick={() => navigate('/')}
                             className="flex items-center space-x-1 sm:space-x-2 text-gray-900 hover:opacity-80 cursor-pointer"
@@ -90,7 +90,8 @@ export default function Navbar() {
                                 className="h-5 sm:h-8 lg:h-9"
                                 loading="lazy"
                             />
-                            <span className="text-base sm:text-2xl lg:text-3xl font-extrabold tracking-tight select-none">LoOmi</span>
+                            {/* Increased LoOmi text size */}
+                            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight select-none">LoOmi</span>
                         </div>
 
                         {/* Category Dropdown - Hidden on small screens, shown on md and up */}
@@ -195,10 +196,12 @@ export default function Navbar() {
                                 <span className="hidden sm:inline font-medium text-sm">Cart</span>
                             </button>
 
-                            {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
+                            {/* Main Mobile Menu Toggle Button (Hamburger / Close Icon) */}
                             <button
                                 className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
-                                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                                onClick={() => {
+                                    setIsMobileMenuOpen((prev) => !prev);
+                                }}
                                 aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                             >
                                 {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
@@ -207,6 +210,37 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
+
+            {/* Always-Visible Secondary Mobile Navigation (Shop, Home, Sale) */}
+            {/* This navigation will appear below the main header on mobile screens */}
+            <nav className="sticky top-[72px] z-40 bg-white shadow-sm lg:hidden border-b border-gray-200">
+                <ul className="flex justify-around items-center py-2"> {/* Reduced padding for smaller size */}
+                    <li>
+                        <button
+                            onClick={() => navigate('/')}
+                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
+                        >
+                            <FaHome className="text-lg mb-0.5" /> Home
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            onClick={() => navigate('/shop')}
+                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
+                        >
+                            <FaStore className="text-lg mb-0.5" /> Shop
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            onClick={() => navigate('/offersalepage')}
+                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
+                        >
+                            <FaTag className="text-lg mb-0.5" /> Sale
+                        </button>
+                    </li>
+                </ul>
+            </nav>
 
             {/* Non-sticky Secondary Nav (Desktop Only) */}
             <nav className="bg-gray-50 border-t border-gray-200 hidden lg:block">
@@ -218,7 +252,7 @@ export default function Navbar() {
                     </ul>
                     <div className="flex items-center gap-2 text-sm text-gray-700">
                         <FaPhoneAlt className="text-base text-gray-600" />
-                        <span>24/7 Support: <strong className="text-gray-900">74920-43477</strong></span>
+                        <span>24/7 Support: <strong className="text-gray-900">95396-97664</strong></span>
                     </div>
                 </div>
             </nav>
@@ -252,20 +286,19 @@ export default function Navbar() {
 
                 {/* Mobile Menu Items - Grouped for clarity */}
                 <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
-
-                    {/* Elevated Main Navigation (Home, Shop, Sale) - Your "Secondary Nav" within the drawer */}
-                    <li className="border-b border-gray-200 pb-2">
-                        <h3 className="text-lg font-semibold text-gray-500 mb-3">Quick Links</h3>
-                        <ul className="flex flex-col gap-3">
-                            <li><button onClick={() => { navigate('/'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3 text-xl font-semibold"><FaHome className="text-xl" /> Home</button></li>
-                            <li><button onClick={() => { navigate('/shop'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3 text-xl font-semibold"><FaStore className="text-xl" /> Shop</button></li>
-                            <li><button onClick={() => { navigate('/offersalepage'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3 text-xl font-semibold"><FaTag className="text-xl" /> Sale</button></li>
+                    {/* Main Navigation (These are redundant if the always-visible nav is there, but can serve as larger links for completeness or if it's the only nav) */}
+                    <li>
+                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Navigation</h3>
+                        <ul>
+                            <li><button onClick={() => { navigate('/'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaHome className="text-lg" /> Home</button></li>
+                            <li><button onClick={() => { navigate('/shop'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaStore className="text-lg" /> Shop</button></li>
+                            <li><button onClick={() => { navigate('/offersalepage'); closeMobileMenu(); }} className="block w-full py-2 text-left hover:text-indigo-600 transition-colors flex items-center gap-3"><FaTag className="text-lg" /> Sale</button></li>
                         </ul>
                     </li>
 
                     {/* Shop by Category */}
-                    <li className="mt-4 border-b border-gray-200 pb-2">
-                        <h3 className="text-lg font-semibold text-gray-500 mb-3">Shop by Category</h3>
+                    <li className="mt-4">
+                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Shop by Category</h3>
                         <div className="relative w-full">
                             <select
                                 className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none text-base"
@@ -286,8 +319,8 @@ export default function Navbar() {
                     </li>
 
                     {/* Account and Utilities */}
-                    <li className="mt-4 border-b border-gray-200 pb-2">
-                        <h3 className="text-lg font-semibold text-gray-500 mb-3">Account</h3>
+                    <li className="mt-4">
+                        <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Account</h3>
                         <ul>
                             {isLoggedIn ? (
                                 <>
@@ -307,11 +340,11 @@ export default function Navbar() {
                     </li>
 
                     {/* Support Contact */}
-                    <li className="mt-4 pt-4"> {/* Removed border-t and pt-4 if previous element has border-b */}
+                    <li className="mt-4 border-t border-gray-200 pt-4">
                         <h3 className="text-lg font-semibold text-gray-500 mb-2">Need Help?</h3>
                         <div className="flex items-center gap-2 text-base text-gray-700">
                             <FaPhoneAlt className="text-base text-gray-600" />
-                            <span>Call Us: <strong className="text-gray-900">74920-43477</strong></span>
+                            <span>Call Us: <strong className="text-gray-900">95396-97664</strong></span>
                         </div>
                     </li>
                 </ul>
