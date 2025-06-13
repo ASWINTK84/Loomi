@@ -91,7 +91,7 @@ export default function Navbar() {
                                 loading="lazy"
                             />
                             {/* Increased LoOmi text size */}
-                            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight select-none">LoOmi</span>
+                            <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight select-none">LoOmi</span>
                         </div>
 
                         {/* Category Dropdown - Hidden on small screens, shown on md and up */}
