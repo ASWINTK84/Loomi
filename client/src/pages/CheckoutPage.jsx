@@ -215,7 +215,7 @@ const CheckoutPage = () => {
         setLoadingOrder(true);
 
         if (paymentMethod === 'cod') {
-            await saveOrderToBackend("COD"); // Call with "COD" as payment status
+            await saveOrderToBackend("COD"); 
         } else if (paymentMethod === 'online') {
             try {
                 // Step 1: Create Razorpay Order on your backend

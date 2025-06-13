@@ -180,7 +180,7 @@ const ProductCard = ({ product, isListView = false }) => {
         }
 
         addToCart(product, 1, sizeToAddToCart, colorToAddToCart);
-        toast.success(`${product.name} added to cart!`);
+        // toast.success(`${product.name} added to cart!`);
     };
 
     // Handles Add to Cart action from the Quick View Modal (uses selectedQuickViewSize/Color)
@@ -199,7 +199,7 @@ const ProductCard = ({ product, isListView = false }) => {
         }
 
         addToCart(product, 1, sizeToAddToCart, colorToAddToCart);
-        toast.success(`${product.name} added to cart!`);
+        // toast.success(`${product.name} added to cart!`);
         setIsQuickViewOpen(false); // Close modal after successful add
     };
 

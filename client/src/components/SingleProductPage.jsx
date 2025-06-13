@@ -175,7 +175,7 @@ const SingleProductPage = () => {
         }
 
         addToCart(product, quantity, selectedSize, selectedColor);
-        toast.success(`${product.name} added to cart!`);
+        // toast.success(`${product.name} added to cart!`);
     };
 
     // Placeholder for product rating and review count
