@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ProductCard from '../components/homepage/needs/ProductCard';
 import { useCategory } from '../context/CategoryContext';
-import { FaThLarge, FaList } from 'react-icons/fa';
+import { FaThLarge, FaList, FaFilter, FaTimes } from 'react-icons/fa'; // Import FaFilter and FaTimes
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const ShopPage = () => {
     const { categories: apiCategories } = useCategory();
-    const [allProducts, setAllProducts] = useState([]); // Renamed PRODUCT to allProducts for clarity
-    const [loadingInitial, setLoadingInitial] = useState(false); // Renamed loading
-    const [errorInitial, setErrorInitial] = useState(null); // Renamed error
+    const [allProducts, setAllProducts] = useState([]);
+    const [loadingInitial, setLoadingInitial] = useState(false);
+    const [errorInitial, setErrorInitial] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -21,14 +21,17 @@ const ShopPage = () => {
     const [sortOption, setSortOption] = useState('latest');
     const [gridView, setGridView] = useState(true);
 
+    // Mobile filter state
+    const [showMobileFilters, setShowMobileFilters] = useState(false); // NEW STATE
+
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const PRODUCTS_PER_PAGE = 9;
 
     // Filtered & paginated products to display
-    const [displayedProducts, setDisplayedProducts] = useState([]); // Renamed products
-    const [loadingFilters, setLoadingFilters] = useState(true); // Renamed loadingProducts
-    const [errorFilters, setErrorFilters] = useState(null); // Renamed errorProducts
+    const [displayedProducts, setDisplayedProducts] = useState([]);
+    const [loadingFilters, setLoadingFilters] = useState(true);
+    const [errorFilters, setErrorFilters] = useState(null);
 
     // States for dynamically available filter options
     const [availableSizes, setAvailableSizes] = useState([]);
@@ -77,7 +80,6 @@ const ShopPage = () => {
             const matchedCategory = apiCategories.find(cat => cat.name === categoryFromUrl);
             if (matchedCategory) {
                 // Set initial category from URL only if not already selected
-                // This prevents it from overriding user selections later
                 setSelectedCategories(prev => {
                     if (!prev.includes(matchedCategory.name)) {
                         return [matchedCategory.name]; // Start with only this category if URL is present
@@ -146,7 +148,7 @@ const ShopPage = () => {
         if (allProducts.length > 0) {
             applyFilters();
         }
-    }, [allProducts, selectedCategories, selectedSizes, selectedColors, priceRange, sortOption, applyFilters]); // Added applyFilters to dependencies
+    }, [allProducts, selectedCategories, selectedSizes, selectedColors, priceRange, sortOption, applyFilters]);
 
     // Pagination helpers
     const totalPages = Math.ceil(displayedProducts.length / PRODUCTS_PER_PAGE);
@@ -169,21 +171,17 @@ const ShopPage = () => {
             const newCategories = prev.includes(catName)
                 ? prev.filter(c => c !== catName)
                 : [...prev, catName];
-            
-            // Remove the 'category' parameter from the URL if no categories are selected
-            // or update it if only one category is selected.
+
             const params = new URLSearchParams(location.search);
             if (newCategories.length === 1) {
                 params.set('category', newCategories[0]);
             } else if (newCategories.length === 0) {
                 params.delete('category');
             } else {
-                // If multiple categories are selected, clear the URL parameter
-                // as it can only represent one category
                 params.delete('category');
             }
             navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-            
+
             return newCategories;
         });
     };
@@ -212,7 +210,8 @@ const ShopPage = () => {
         setPriceRange({ min: 0, max: 100000 });
         setSortOption('latest');
         setCurrentPage(1);
-        navigate('/shop', { replace: true }); // Clear URL parameter
+        navigate('/shop', { replace: true });
+        setShowMobileFilters(false); // Close filters on clear
     };
 
     // Helper to determine text color for contrast on colored buttons
@@ -264,108 +263,129 @@ const ShopPage = () => {
     };
 
     const FilterSidebar = () => (
-        <div className="w-full lg:w-1/4 p-6 bg-white rounded-lg shadow-md">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">Filters:</h3>
-                <button onClick={handleClearAllFilters} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Clear All</button>
+        // Conditional classes for mobile:
+        // Hidden on small screens by default (hidden) and shown when showMobileFilters is true
+        // On large screens, it's always block
+        <div className={`
+            fixed inset-y-0 left-0 w-64 bg-white z-50 transform transition-transform duration-300 ease-in-out
+            lg:relative lg:w-1/4 lg:translate-x-0 lg:p-6 lg:rounded-lg lg:shadow-md
+            ${showMobileFilters ? 'translate-x-0' : '-translate-x-full'}
+            overflow-y-auto pt-6
+        `}>
+            {/* Close button for mobile filters */}
+            <div className="lg:hidden flex justify-end p-4">
+                <button
+                    onClick={() => setShowMobileFilters(false)}
+                    className="text-gray-600 hover:text-gray-800 focus:outline-none"
+                    aria-label="Close filters"
+                >
+                    <FaTimes size={24} />
+                </button>
             </div>
 
-            <div className="mb-8">
-                <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
-                    Category <span className="text-gray-400">^</span>
-                </h4>
-                {filterCategories.map(cat => (
-                    <label key={cat._id} className="flex items-center mb-2 cursor-pointer">
+            <div className="p-6 lg:p-0"> {/* Add padding for mobile view content */}
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-800">Filters:</h3>
+                    <button onClick={handleClearAllFilters} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Clear All</button>
+                </div>
+
+                <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
+                        Category <span className="text-gray-400">^</span>
+                    </h4>
+                    {filterCategories.map(cat => (
+                        <label key={cat._id} className="flex items-center mb-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={selectedCategories.includes(cat.name)}
+                                onChange={() => handleCategoryCheckboxChange(cat.name)}
+                                className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                            />
+                            <span className="ml-2 text-gray-700">{cat.name} ({cat.count})</span>
+                        </label>
+                    ))}
+                </div>
+
+                {/* Dynamically rendered Size filter */}
+                {availableSizes.length > 0 && (
+                    <div className="mb-8">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
+                            Size <span className="text-gray-400">^</span>
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                            {availableSizes.map(size => (
+                                <button
+                                    key={size}
+                                    onClick={() => handleSizeChange(size)}
+                                    className={`px-4 py-2 border rounded-md text-sm font-medium ${
+                                        selectedSizes.includes(size) ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Dynamically rendered Color filter */}
+                {availableColors.length > 0 && (
+                    <div className="mb-8">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
+                            Colors <span className="text-gray-400">^</span>
+                        </h4>
+                        <div className="flex flex-wrap gap-3">
+                            {availableColors.map(color => (
+                                <button
+                                    key={color}
+                                    onClick={() => handleColorChange(color)}
+                                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                                        selectedColors.includes(color) ? 'border-blue-600 ring-2 ring-blue-300' : 'border-gray-300'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                    aria-label={`Color ${color}`}
+                                >
+                                    {selectedColors.includes(color) && ( // Add a checkmark for selected colors
+                                        <span className={`text-sm ${isLightColor(color) ? 'text-gray-800' : 'text-white'}`}>✓</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
+                        Price <span className="text-gray-400">^</span>
+                    </h4>
+                    <div className="flex justify-between items-center mb-4">
                         <input
-                            type="checkbox"
-                            checked={selectedCategories.includes(cat.name)}
-                            onChange={() => handleCategoryCheckboxChange(cat.name)}
-                            className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                            type="number"
+                            name="min"
+                            value={priceRange.min}
+                            onChange={handlePriceChange}
+                            placeholder="Min price"
+                            className="w-1/2 p-2 border border-gray-300 rounded-md text-center mr-2"
                         />
-                        <span className="ml-2 text-gray-700">{cat.name} ({cat.count})</span>
-                    </label>
-                ))}
-            </div>
-
-            {/* Dynamically rendered Size filter */}
-            {availableSizes.length > 0 && (
-                <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
-                        Size <span className="text-gray-400">^</span>
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                        {availableSizes.map(size => (
-                            <button
-                                key={size}
-                                onClick={() => handleSizeChange(size)}
-                                className={`px-4 py-2 border rounded-md text-sm font-medium ${
-                                    selectedSizes.includes(size) ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
-                                }`}
-                            >
-                                {size}
-                            </button>
-                        ))}
+                        <span className="text-gray-500">-</span>
+                        <input
+                            type="number"
+                            name="max"
+                            value={priceRange.max}
+                            onChange={handlePriceChange}
+                            placeholder="Max price"
+                            className="w-1/2 p-2 border border-gray-300 rounded-md text-center ml-2"
+                        />
                     </div>
-                </div>
-            )}
-
-            {/* Dynamically rendered Color filter */}
-            {availableColors.length > 0 && (
-                <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
-                        Colors <span className="text-gray-400">^</span>
-                    </h4>
-                    <div className="flex flex-wrap gap-3">
-                        {availableColors.map(color => (
-                            <button
-                                key={color}
-                                onClick={() => handleColorChange(color)}
-                                className={`w-8 h-8 rounded-full border-2 ${
-                                    selectedColors.includes(color) ? 'border-blue-600 ring-2 ring-blue-300' : 'border-gray-300'
-                                }`}
-                                style={{ backgroundColor: color }}
-                                aria-label={`Color ${color}`}
-                            >
-                                {selectedColors.includes(color) && ( // Add a checkmark for selected colors
-                                    <span className={`text-sm ${isLightColor(color) ? 'text-gray-800' : 'text-white'}`}>✓</span>
-                                )}
-                            </button>
-                        ))}
+                    <div className="text-sm text-gray-600 text-center">
+                        ₹{priceRange.min || 0} - ₹{priceRange.max || 0}
                     </div>
-                </div>
-            )}
-
-            <div className="mb-8">
-                <h4 className="text-lg font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center">
-                    Price <span className="text-gray-400">^</span>
-                </h4>
-                <div className="flex justify-between items-center mb-4">
-                    <input
-                        type="number"
-                        name="min"
-                        value={priceRange.min}
-                        onChange={handlePriceChange}
-                        placeholder="Min price"
-                        className="w-1/2 p-2 border border-gray-300 rounded-md text-center mr-2"
-                    />
-                    <span className="text-gray-500">-</span>
-                    <input
-                        type="number"
-                        name="max"
-                        value={priceRange.max}
-                        onChange={handlePriceChange}
-                        placeholder="Max price"
-                        className="w-1/2 p-2 border border-gray-300 rounded-md text-center ml-2"
-                    />
-                </div>
-                <div className="text-sm text-gray-600 text-center">
-                    ₹{priceRange.min || 0} - ₹{priceRange.max || 0}
                 </div>
             </div>
         </div>
     );
 
-    // Pagination buttons component
+    // Pagination buttons component (no changes needed here)
     const Pagination = () => {
         if (totalPages <= 1) return null;
 
@@ -454,14 +474,33 @@ const ShopPage = () => {
                 </div>
             </section>
 
-            <section className="py-12 md:py-16 bg-gray-50">
-                <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8">
+            <section className="py-12 md:py-16 bg-gray-50 min-h-screen">
+                <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8 relative"> {/* Added relative for overlay */}
+                    {/* Filter Sidebar - Now responsive */}
                     <FilterSidebar />
+
+                    {/* Overlay for mobile filters */}
+                    {showMobileFilters && (
+                        <div
+                            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                            onClick={() => setShowMobileFilters(false)} // Close filters when clicking outside
+                        ></div>
+                    )}
 
                     <div className="w-full lg:w-3/4">
                         <div className="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
+                            {/* Filter button for mobile */}
+                            <button
+                                onClick={() => setShowMobileFilters(true)}
+                                className="lg:hidden p-2 rounded-md bg-blue-600 text-white flex items-center gap-2"
+                                aria-label="Open filters"
+                            >
+                                <FaFilter />
+                                <span>Filters</span>
+                            </button>
+
                             <div className="flex items-center gap-4">
-                                <span className="text-gray-600">Sort by:</span>
+                                <span className="text-gray-600 hidden sm:block">Sort by:</span> {/* Hide on tiny screens */}
                                 <select
                                     value={sortOption}
                                     onChange={(e) => setSortOption(e.target.value)}
@@ -474,7 +513,7 @@ const ShopPage = () => {
                             </div>
 
                             <div className="flex items-center gap-4">
-                                <span className="text-gray-600 text-sm hidden sm:block">
+                                <span className="text-gray-600 text-sm hidden md:block">
                                     Showing {paginatedProducts.length} of {displayedProducts.length} products
                                 </span>
                                 <div className="flex gap-2">

@@ -12,10 +12,7 @@ export const WishlistProvider = ({ children }) => {
   const [loadingWishlist, setLoadingWishlist] = useState(true);
   const [errorWishlist, setErrorWishlist] = useState(null);
 
-  // You would typically get the user token from authentication context
-  // For demonstration, let's assume you have a way to get the token
   const getAuthToken = () => {
-    // Replace with your actual logic to get the auth token (e.g., from localStorage, AuthContext)
     return localStorage.getItem('token'); // Example: get token from localStorage
   };
 
