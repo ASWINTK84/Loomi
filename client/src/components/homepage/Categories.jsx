@@ -93,7 +93,7 @@ const Categories = () => {
 
    const categoryImageUrls = [
     "https://5.imimg.com/data5/SELLER/Default/2021/9/UL/KV/AT/8311874/winter-wear-1000x1000.png",
-    "https://th.bing.com/th/id/OIP.lG_isUmIzlc-QzEGIzQ_HQHaHa?rs=1&pid=ImgDetMain",
+    "https://www.popoptiq.com/wp-content/uploads/2019/01/4-25-1-870x646.jpg",
     "https://mir-s3-cdn-cf.behance.net/projects/404/4f8032186976273.Y3JvcCw0NTk2LDM1OTUsMjYxLDA.png",
   "https://th.bing.com/th/id/OIP.o_OkNsfokkO-CRwVxqz0iQHaE7?rs=1&pid=ImgDetMain",
     "https://th.bing.com/th/id/OIP.lG_isUmIzlc-QzEGIzQ_HQHaHa?rs=1&pid=ImgDetMain",
