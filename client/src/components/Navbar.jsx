@@ -95,7 +95,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Category Dropdown - Hidden on small screens, shown on md and up */}
-                        <div className="relative hidden md:inline-block w-full max-w-xs md:max-w-xs lg:max-w-md">
+                        <div className="relative hidden md:inline-block w-full max-w-xs md:max-w-xs lg:max-w-sm">
                             <select
                                 className="block w-full bg-gray-50 border-b-2 border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md focus:outline-none focus:border-blue-500 transition cursor-pointer appearance-none"
                                 value={selectedCategory}
