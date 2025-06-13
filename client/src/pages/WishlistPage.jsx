@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaHeartBroken, FaTrash, FaShoppingCart } from 'react-icons/fa';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
-import { toast } from 'react-toastify'; 
+import { toast } from 'react-toastify'; // For notifications
 
 const WishlistPage = () => {
     const { wishlist, removeFromWishlist, loadingWishlist, errorWishlist } = useWishlist();
