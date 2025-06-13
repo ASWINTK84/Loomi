@@ -1,16 +1,16 @@
 import React from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import { useNavigate } from 'react-router-dom';
-import { FaHeartBroken, FaTrash, FaShoppingCart } from 'react-icons/fa'; // Added FaShoppingCart
+import { FaHeartBroken, FaTrash, FaShoppingCart } from 'react-icons/fa'; 
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
-import { toast } from 'react-toastify'; // Import toast for notifications
+import { toast } from 'react-toastify'; 
 
 const WishlistPage = () => {
     const { wishlist, removeFromWishlist, loadingWishlist, errorWishlist } = useWishlist();
     const navigate = useNavigate();
     const { offerProducts } = useProducts();
-    const { addToCart } = useCart(); // Access addToCart from CartContext
+    const { addToCart } = useCart(); 
 
     // Helper function to format price in Indian Rupees (INR)
     const formatPrice = (price) => {
@@ -23,7 +23,7 @@ const WishlistPage = () => {
 
     const handleRemoveClick = (productId) => {
         removeFromWishlist(productId);
-        toast.info('Product removed from wishlist!'); // Notification
+        toast.info('Product removed from wishlist!');
     };
 
     const handleProductClick = (productId) => {
@@ -41,7 +41,7 @@ const WishlistPage = () => {
     // Function to determine which price to display
     const getDisplayPrice = (product) => {
         const productOffer = offerProducts.find(
-            (offer) => offer.product?._id === product._id // Use optional chaining for safer access
+            (offer) => offer.product?._id === product._id 
         );
 
         if (productOffer) {
