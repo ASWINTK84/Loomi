@@ -21,7 +21,7 @@ import {
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useWishlist } = from '../context/WishlistContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
