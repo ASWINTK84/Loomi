@@ -1,18 +1,18 @@
 import React from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import { useNavigate } from 'react-router-dom';
-import { FaHeartBroken, FaTrash, FaShoppingCart } from 'react-icons/fa';
+import { FaHeartBroken, FaTrash, FaShoppingCart } from 'react-icons/fa'; // Added FaShoppingCart
 import { useProducts } from '../context/ProductContext';
-import { useCart } from '../context/CartContext';
-import { toast } from 'react-toastify'; // For notifications
+import { useCart } from '../context/CartContext'; // Import useCart context
+import { toast } from 'react-toastify'; // Import toast for notifications
 
 const WishlistPage = () => {
     const { wishlist, removeFromWishlist, loadingWishlist, errorWishlist } = useWishlist();
-    const { offerProducts } = useProducts();
-    const { addToCart } = useCart(); // Get addToCart from CartContext
     const navigate = useNavigate();
+    const { offerProducts } = useProducts();
+    const { addToCart } = useCart(); // Access addToCart from CartContext
 
-    // Helper function to format price in Indian Rupees
+    // Helper function to format price in Indian Rupees (INR)
     const formatPrice = (price) => {
         if (typeof price !== 'number' || isNaN(price)) return 'N/A';
         return new Intl.NumberFormat('en-IN', {
@@ -23,7 +23,7 @@ const WishlistPage = () => {
 
     const handleRemoveClick = (productId) => {
         removeFromWishlist(productId);
-        toast.info('Product removed from wishlist.');
+        toast.info('Product removed from wishlist!'); // Notification
     };
 
     const handleProductClick = (productId) => {
@@ -31,46 +31,41 @@ const WishlistPage = () => {
     };
 
     const handleAddToCart = (product) => {
-        // You might want to allow selecting size/color before adding to cart
-        // For simplicity, we'll add with default or first available options
+        // For simplicity, adding with default size/color.
+        // In a real app, you might want to open a modal for selection or navigate to product detail.
         const sizeToAdd = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'One Size';
         const colorToAdd = product.colors && product.colors.length > 0 ? product.colors[0] : 'Default Color';
 
-        addToCart(product, 1, sizeToAdd, colorToAdd);
-        toast.success(`${product.name} added to cart!`);
-        // Optionally, remove from wishlist after adding to cart
-        // removeFromWishlist(product._id);
+        addToCart(product, 1, sizeToAdd, colorToAdd); // Add product with quantity 1
+        toast.success(`${product.name} added to cart!`); // Notification
     };
 
     // Function to determine which price to display
     const getDisplayPrice = (product) => {
-        // Find if the current product has an active offer
         const productOffer = offerProducts.find(
-            (offer) => offer.product?._id === product._id // Use optional chaining for safety
+            (offer) => offer.product?._id === product._id // Use optional chaining for safer access
         );
 
         if (productOffer) {
-            // Calculate the discounted price
             const discountedPrice = product.price - (product.price * (productOffer.offerPercentage / 100));
 
             return (
-                <div className="flex items-baseline flex-wrap gap-x-2 gap-y-1"> {/* Added flex-wrap for mobile */}
-                    <span className="text-xl md:text-2xl font-extrabold text-blue-600"> {/* Adjusted size for mobile */}
+                <div className="flex items-baseline flex-wrap gap-x-2 gap-y-1">
+                    <span className="text-xl md:text-2xl font-extrabold text-blue-600">
                         {formatPrice(discountedPrice)}
                     </span>
                     <span className="text-sm text-gray-500 line-through">
                         {formatPrice(product.price)}
                     </span>
-                    <span className="text-xs md:text-sm font-semibold text-green-500"> {/* Adjusted size for mobile */}
+                    <span className="text-xs md:text-sm font-semibold text-green-500">
                         ({productOffer.offerPercentage}% off)
                     </span>
                 </div>
             );
         }
 
-        // If no offer, display the regular price
         return (
-            <span className="text-xl md:text-2xl font-extrabold text-blue-600"> {/* Adjusted size for mobile */}
+            <span className="text-xl md:text-2xl font-extrabold text-blue-600">
                 {formatPrice(product.price)}
             </span>
         );
@@ -91,7 +86,7 @@ const WishlistPage = () => {
                 <p className="text-lg md:text-xl font-medium">Error loading wishlist:</p>
                 <p className="text-base md:text-lg mt-2">{errorWishlist}</p>
                 <button
-                    onClick={() => window.location.reload()} // Simple reload to retry
+                    onClick={() => window.location.reload()}
                     className="mt-6 px-5 py-2.5 md:px-6 md:py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
                 >
                     Retry
@@ -114,6 +109,7 @@ const WishlistPage = () => {
                     </nav>
                 </div>
             </section>
+
             {/* Main Content */}
             <section className="py-8 md:py-12 bg-gray-100 min-h-screen">
                 <div className="container mx-auto px-4">
@@ -145,11 +141,11 @@ const WishlistPage = () => {
                                         <img
                                             src={
                                                 product.imageUrl ||
-                                                product.images?.[0]?.url || // Check for images array as well
+                                                product.images?.[0]?.url || // Prioritize images array if available
                                                 'https://via.placeholder.com/400x400?text=No+Image'
                                             }
                                             alt={product.name}
-                                            className="w-full h-48 sm:h-56 md:h-64 object-contain bg-white cursor-pointer transition-transform duration-300 hover:scale-105 p-2" // Added p-2 for some internal padding
+                                            className="w-full h-48 sm:h-56 md:h-64 object-contain bg-white cursor-pointer transition-transform duration-300 hover:scale-105 p-2"
                                             onClick={() => handleProductClick(product._id)}
                                         />
 
@@ -173,16 +169,17 @@ const WishlistPage = () => {
                                                 {product.name}
                                             </h3>
                                         </div>
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-auto pt-2 gap-2"> {/* Adjusted for mobile stacking */}
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-auto pt-2 gap-2">
                                             {/* --- Price Display Area --- */}
                                             {getDisplayPrice(product)}
                                             <button
                                                 onClick={() => handleAddToCart(product)}
-                                                className="bg-blue-600 text-white rounded-lg p-2.5 text-sm md:text-base hover:bg-blue-700 transition duration-300 flex items-center justify-center shadow-md w-full sm:w-auto mt-2 sm:mt-0" // Full width on mobile, auto on sm+
+                                                className="bg-blue-600 text-white rounded-lg p-2.5 text-sm md:text-base hover:bg-blue-700 transition duration-300 flex items-center justify-center shadow-md w-full sm:w-auto mt-2 sm:mt-0"
                                                 aria-label={`Add ${product.name} to cart`}
                                                 title="Add to Cart"
                                             >
-                                                <FaShoppingCart className="mr-1 sm:mr-2" /> <span className="hidden sm:inline">Add to Cart</span> {/* Hide text on very small screens */}
+                                                <FaShoppingCart className="mr-1 sm:mr-2" />
+                                                <span className="hidden sm:inline">Add to Cart</span>
                                             </button>
                                         </div>
                                     </div>
