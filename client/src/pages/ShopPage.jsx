@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ProductCard from '../components/homepage/needs/ProductCard';
 import { useCategory } from '../context/CategoryContext';
-import { FaThLarge, FaList, FaFilter, FaTimes } from 'react-icons/fa';
+import { FaThLarge, FaList, FaFilter, FaTimes } from 'react-icons/fa'; // Import FaFilter and FaTimes
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ const ShopPage = () => {
     const [gridView, setGridView] = useState(true);
 
     // Mobile filter state
-    const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [showMobileFilters, setShowMobileFilters] = useState(false); // NEW STATE
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
@@ -72,22 +72,23 @@ const ShopPage = () => {
         }
     }, [allProducts]);
 
-    // Effect to read URL parameter and set initial category filter ONLY ONCE
+    // NEW: Effect to read URL parameter and set initial category filter ONLY ONCE
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const categoryFromUrl = params.get('category');
         if (categoryFromUrl && apiCategories.length > 0) {
             const matchedCategory = apiCategories.find(cat => cat.name === categoryFromUrl);
             if (matchedCategory) {
+                // Set initial category from URL only if not already selected
                 setSelectedCategories(prev => {
                     if (!prev.includes(matchedCategory.name)) {
-                        return [matchedCategory.name];
+                        return [matchedCategory.name]; // Start with only this category if URL is present
                     }
                     return prev;
                 });
             }
         }
-    }, [location.search, apiCategories]);
+    }, [location.search, apiCategories]); // Depend only on location.search and apiCategories
 
     // Helper to get category count for filters
     const filterCategories = apiCategories.map(cat => ({
@@ -177,7 +178,6 @@ const ShopPage = () => {
             } else if (newCategories.length === 0) {
                 params.delete('category');
             } else {
-                // If multiple categories are selected, remove the single category param
                 params.delete('category');
             }
             navigate(`${location.pathname}?${params.toString()}`, { replace: true });
@@ -216,46 +216,37 @@ const ShopPage = () => {
 
     // Helper to determine text color for contrast on colored buttons
     const isLightColor = (color) => {
-        if (!color || typeof color !== 'string') return true; // Default to light if color is invalid
-
+        if (!color || typeof color !== 'string') return true;
         const namedColors = {
             black: '#000000', white: '#FFFFFF', red: '#FF0000', green: '#008000', blue: '#0000FF',
             yellow: '#FFFF00', cyan: '#00FFFF', magenta: '#FF00FF', gray: '#808080',
             maroon: '#800000', olive: '#808000', purple: '#800080', teal: '#008080',
             navy: '#000080', silver: '#C0C0C0', gold: '#FFD700', orange: '#FFA500',
             pink: '#FFC0CB', brown: '#A52A2A', violet: '#EE82EE', indigo: '#4B0082',
-            // Add more named colors if needed
         };
 
         let hexColor = color.startsWith('#') ? color : namedColors[color.toLowerCase()];
 
-        // Attempt to convert CSS named colors to hex if not already defined
         if (!hexColor) {
-            try {
-                const testDiv = document.createElement('div');
-                testDiv.style.color = color;
-                document.body.appendChild(testDiv);
-                const computedColor = window.getComputedStyle(testDiv).color;
-                document.body.removeChild(testDiv);
+            const testDiv = document.createElement('div');
+            testDiv.style.color = color;
+            document.body.appendChild(testDiv);
+            const computedColor = window.getComputedStyle(testDiv).color;
+            document.body.removeChild(testDiv);
 
-                const rgbMatch = computedColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-                if (rgbMatch) {
-                    hexColor = '#' +
-                        ('0' + parseInt(rgbMatch[1], 10).toString(16)).slice(-2) +
-                        ('0' + parseInt(rgbMatch[2], 10).toString(16)).slice(-2) +
-                        ('0' + parseInt(rgbMatch[3], 10).toString(16)).slice(-2);
-                } else {
-                    return true; // Fallback to true if cannot determine color
-                }
-            } catch (e) {
-                console.error("Error converting color name to hex:", e);
-                return true; // Fallback in case of DOM manipulation errors
+            const rgbMatch = computedColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            if (rgbMatch) {
+                hexColor = '#' +
+                    ('0' + parseInt(rgbMatch[1], 10).toString(16)).slice(-2) +
+                    ('0' + parseInt(rgbMatch[2], 10).toString(16)).slice(-2) +
+                    ('0' + parseInt(rgbMatch[3], 10).toString(16)).slice(-2);
+            } else {
+                return false;
             }
         }
 
-        // Convert hex to RGB and calculate YIQ
         let r, g, b;
-        if (hexColor.length === 4) { // #RGB shortand
+        if (hexColor.length === 4) { // #RGB
             r = parseInt(hexColor[1] + hexColor[1], 16);
             g = parseInt(hexColor[2] + hexColor[2], 16);
             b = parseInt(hexColor[3] + hexColor[3], 16);
@@ -264,30 +255,21 @@ const ShopPage = () => {
             g = parseInt(hexColor.substring(3, 5), 16);
             b = parseInt(hexColor.substring(5, 7), 16);
         } else {
-            return true; // Fallback for invalid hex format
+            return false;
         }
 
-        // YIQ value (luminance) calculation for determining text color
         const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-        return (yiq >= 170); // Return true for light color (suggests dark text), false for dark color (suggests light text)
+        return (yiq >= 170);
     };
 
-
     const FilterSidebar = () => (
-        // Key change here:
-        // lg:relative: On large screens, the sidebar becomes relative, flowing with the document.
-        // lg:translate-x-0: Ensures it's always visible on large screens.
-        // hidden: Initially hidden on small screens.
-        // lg:block: Always visible on large screens.
-        // fixed inset-y-0 left-0 w-64 z-50 transform transition-transform duration-300 ease-in-out: These apply ONLY when showMobileFilters is true (for mobile overlay).
-        // ${showMobileFilters ? 'translate-x-0' : '-translate-x-full'}: This dynamic class applies only on smaller screens, sliding the sidebar in/out.
+        // Changed `fixed` to `absolute` for mobile and ensure `lg:relative` for larger screens.
+        // `top-0` is added to position correctly within the `relative` parent `section`.
         <div className={`
-            bg-white z-50 overflow-y-auto
-            lg:block lg:relative lg:w-1/4 lg:p-6 lg:rounded-lg lg:shadow-md
-            ${showMobileFilters
-                ? 'fixed inset-y-0 left-0 w-64 transform translate-x-0 transition-transform duration-300 ease-in-out pt-6'
-                : 'hidden lg:translate-x-0' // On smaller screens, it's hidden unless `showMobileFilters` is true. On large screens, it's always block and not translated.
-            }
+            absolute top-0 left-0 w-64 bg-white z-50 transform transition-transform duration-300 ease-in-out
+            lg:relative lg:w-1/4 lg:translate-x-0 lg:p-6 lg:rounded-lg lg:shadow-md lg:h-fit
+            ${showMobileFilters ? 'translate-x-0' : '-translate-x-full'}
+            overflow-y-auto pt-6
         `}>
             {/* Close button for mobile filters */}
             <div className="lg:hidden flex justify-end p-4">
@@ -300,7 +282,7 @@ const ShopPage = () => {
                 </button>
             </div>
 
-            <div className="p-6 lg:p-0"> {/* Add padding for mobile view content, reset for large */}
+            <div className="p-6 lg:p-0"> {/* Add padding for mobile view content */}
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-gray-800">Filters:</h3>
                     <button onClick={handleClearAllFilters} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Clear All</button>
@@ -402,6 +384,7 @@ const ShopPage = () => {
         </div>
     );
 
+    // Pagination buttons component (no changes needed here)
     const Pagination = () => {
         if (totalPages <= 1) return null;
 
@@ -481,17 +464,17 @@ const ShopPage = () => {
 
     return (
         <>
-            <section className="bg-white py-6 md:py-8 border-b border-gray-200">
-                <div className="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-0">Explore All Products</h1>
+            <section className="bg-white py-8 border-b border-gray-200">
+                <div className="container mx-auto px-4 flex justify-between items-center">
+                    <h1 className="text-3xl font-bold text-gray-900">Explore All Products</h1>
                     <nav className="text-gray-600 text-sm">
-                        <a href="/" className="hover:text-blue-600 transition-colors">Home</a> / <a href="/shop" className="hover:text-blue-600 transition-colors">Shop</a> / <span className="text-blue-600">Shop With Sidebar</span>
+                        <a href="/" className="hover:text-blue-600">Home</a> / <a href="/shop" className="hover:text-blue-600">Shop</a> / <span className="text-blue-600">Shop With Sidebar</span>
                     </nav>
                 </div>
             </section>
 
-            <section className="py-8 md:py-12 bg-gray-50 min-h-screen">
-                <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8 relative">
+            <section className="py-12 md:py-16 bg-gray-50 min-h-screen">
+                <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8 relative"> {/* Added relative for overlay */}
                     {/* Filter Sidebar - Now responsive */}
                     <FilterSidebar />
 
@@ -504,23 +487,23 @@ const ShopPage = () => {
                     )}
 
                     <div className="w-full lg:w-3/4">
-                        <div className="bg-white rounded-lg shadow-md p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div className="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
                             {/* Filter button for mobile */}
                             <button
                                 onClick={() => setShowMobileFilters(true)}
-                                className="lg:hidden p-2 rounded-md bg-blue-600 text-white flex items-center gap-2 w-full justify-center sm:w-auto"
+                                className="lg:hidden p-2 rounded-md bg-blue-600 text-white flex items-center gap-2"
                                 aria-label="Open filters"
                             >
                                 <FaFilter />
                                 <span>Filters</span>
                             </button>
 
-                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
-                                <span className="text-gray-600 hidden sm:block">Sort by:</span>
+                            <div className="flex items-center gap-4">
+                                <span className="text-gray-600 hidden sm:block">Sort by:</span> {/* Hide on tiny screens */}
                                 <select
                                     value={sortOption}
                                     onChange={(e) => setSortOption(e.target.value)}
-                                    className="p-2 border border-gray-300 rounded-md bg-white text-gray-700 flex-grow sm:flex-grow-0"
+                                    className="p-2 border border-gray-300 rounded-md bg-white text-gray-700"
                                 >
                                     <option value="latest">Latest</option>
                                     <option value="price-low-high">Price: Low to High</option>
@@ -528,7 +511,7 @@ const ShopPage = () => {
                                 </select>
                             </div>
 
-                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
+                            <div className="flex items-center gap-4">
                                 <span className="text-gray-600 text-sm hidden md:block">
                                     Showing {paginatedProducts.length} of {displayedProducts.length} products
                                 </span>
@@ -552,10 +535,7 @@ const ShopPage = () => {
                         </div>
 
                         {loadingInitial || loadingFilters ? (
-                            <div className="text-center text-gray-600 py-10">
-                                <div className="mt-4 animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                                <p className="mt-2">Loading products...</p>
-                            </div>
+                            <div className="text-center text-gray-600 py-10">Loading products...</div>
                         ) : errorInitial || errorFilters ? (
                             <div className="text-center text-red-500 py-10">{errorInitial || errorFilters}</div>
                         ) : displayedProducts.length === 0 ? (
