@@ -16,8 +16,7 @@ import {
     FaUserPlus,
     FaUserCircle,
     FaClipboardList,
-    FaSignOutAlt,
-    FaFilter // Added for a potential filter/category toggle icon
+    FaSignOutAlt
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
@@ -27,7 +26,7 @@ import { useWishlist } from '../context/WishlistContext';
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isSecondaryMobileNavOpen, setIsSecondaryMobileNavOpen] = useState(false); // New state for secondary mobile nav
+    // Removed isSecondaryMobileNavOpen state as it will be always visible
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const { cartItems } = useCart();
@@ -37,20 +36,15 @@ export default function Navbar() {
 
     const navigate = useNavigate();
     const dropdownRef = useRef(); // For desktop user dropdown
-    // mobileMenuRef is for the main drawer, secondaryMobileNavRef for the new one
-    const secondaryMobileNavRef = useRef();
 
     const handleCategoryChange = (e) => {
         const categoryName = e.target.value;
         setSelectedCategory(categoryName);
         navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
 
-        // Close all mobile menus if a category is selected
+        // Close main mobile menu if a category is selected
         if (isMobileMenuOpen) {
             closeMobileMenu();
-        }
-        if (isSecondaryMobileNavOpen) {
-            closeSecondaryMobileNav();
         }
     };
 
@@ -63,17 +57,6 @@ export default function Navbar() {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    // Close secondary mobile nav when clicking outside
-    useEffect(() => {
-        const handleClickOutsideSecondaryNav = (event) => {
-            if (secondaryMobileNavRef.current && !secondaryMobileNavRef.current.contains(event.target)) {
-                setIsSecondaryMobileNavOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutsideSecondaryNav);
-        return () => document.removeEventListener('mousedown', handleClickOutsideSecondaryNav);
     }, []);
 
     // Prevent body scrolling when main mobile menu is open
@@ -89,7 +72,6 @@ export default function Navbar() {
     }, [isMobileMenuOpen]);
 
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
-    const closeSecondaryMobileNav = () => setIsSecondaryMobileNavOpen(false);
 
     return (
         <>
@@ -213,26 +195,10 @@ export default function Navbar() {
                                 <span className="hidden sm:inline font-medium text-sm">Cart</span>
                             </button>
 
-                            {/* Mobile Secondary Nav Toggle Button */}
-                            {/* This button will open the new "Shop Home Sale" bar */}
-                            <button
-                                className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
-                                onClick={() => {
-                                    setIsSecondaryMobileNavOpen((prev) => !prev);
-                                    closeMobileMenu(); // Ensure main menu is closed
-                                }}
-                                aria-label={isSecondaryMobileNavOpen ? "Hide quick links" : "Show quick links"}
-                            >
-                                <FaFilter className="text-2xl" /> {/* Using FaFilter or similar for quick links */}
-                            </button>
-
                             {/* Main Mobile Menu Toggle Button (Hamburger / Close Icon) */}
                             <button
                                 className="lg:hidden text-gray-800 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
-                                onClick={() => {
-                                    setIsMobileMenuOpen((prev) => !prev);
-                                    closeSecondaryMobileNav(); // Ensure secondary menu is closed
-                                }}
+                                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                                 aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                             >
                                 {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
@@ -257,42 +223,36 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* New: Secondary Mobile Navigation (Shop, Home, Sale) */}
-            {isSecondaryMobileNavOpen && (
-                <div
-                    ref={secondaryMobileNavRef}
-                    className="fixed top-[--navbar-height] left-0 right-0 z-40 bg-white shadow-md lg:hidden"
-                    style={{ '--navbar-height': 'calc(var(--tw-h-16) + var(--tw-py-5))' }} /* Adjust based on actual header height */
-                >
-                    <ul className="flex justify-around items-center py-3 border-b border-gray-200">
-                        <li>
-                            <button
-                                onClick={() => { navigate('/'); closeSecondaryMobileNav(); }}
-                                className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-sm font-medium"
-                            >
-                                <FaHome className="text-xl mb-1" /> Home
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                onClick={() => { navigate('/shop'); closeSecondaryMobileNav(); }}
-                                className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-sm font-medium"
-                            >
-                                <FaStore className="text-xl mb-1" /> Shop
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                onClick={() => { navigate('/offersalepage'); closeSecondaryMobileNav(); }}
-                                className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-sm font-medium"
-                            >
-                                <FaTag className="text-xl mb-1" /> Sale
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            )}
-
+            {/* Always-Visible, Compact Mobile Secondary Navigation (Shop, Home, Sale) */}
+            {/* It will be hidden on lg screens and up */}
+            <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg lg:hidden">
+                <ul className="flex justify-around items-center py-2 border-t border-gray-200">
+                    <li>
+                        <button
+                            onClick={() => navigate('/')}
+                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
+                        >
+                            <FaHome className="text-xl mb-0.5" /> Home
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            onClick={() => navigate('/shop')}
+                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
+                        >
+                            <FaStore className="text-xl mb-0.5" /> Shop
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            onClick={() => navigate('/offersalepage')}
+                            className="flex flex-col items-center text-gray-700 hover:text-indigo-600 text-xs font-medium px-2 py-1"
+                        >
+                            <FaTag className="text-xl mb-0.5" /> Sale
+                        </button>
+                    </li>
+                </ul>
+            </nav>
 
             {/* Main Mobile Menu Drawer */}
             {/* Overlay */}
@@ -323,7 +283,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu Items - Grouped for clarity */}
                 <ul className="flex flex-col gap-6 text-xl font-medium text-gray-800 mt-12 w-full">
-                    {/* Main Navigation (These are now the same as the secondary nav for consistency, but kept here for fallback) */}
+                    {/* Main Navigation (These are redundant if the bottom nav is always there, but can serve as larger links for completeness) */}
                     <li>
                         <h3 className="text-lg font-semibold text-gray-500 mb-2 border-b border-gray-200 pb-2">Main Navigation</h3>
                         <ul>
@@ -386,7 +346,7 @@ export default function Navbar() {
                     </li>
                 </ul>
             </nav>
-            {/* END: Mobile Menu Drawer */}
+            {/* END: Main Mobile Menu Drawer */}
         </>
     );
 }
