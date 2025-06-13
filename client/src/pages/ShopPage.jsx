@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ProductCard from '../components/homepage/needs/ProductCard';
 import { useCategory } from '../context/CategoryContext';
-import { FaThLarge, FaList, FaFilter, FaTimes } from 'react-icons/fa'; // Import FaFilter and FaTimes
+import { FaThLarge, FaList, FaFilter, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ const ShopPage = () => {
     const [gridView, setGridView] = useState(true);
 
     // Mobile filter state
-    const [showMobileFilters, setShowMobileFilters] = useState(false); // NEW STATE
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
@@ -88,7 +88,7 @@ const ShopPage = () => {
                 });
             }
         }
-    }, [location.search, apiCategories]); // Depend only on location.search and apiCategories
+    }, [location.search, apiCategories]);
 
     // Helper to get category count for filters
     const filterCategories = apiCategories.map(cat => ({
@@ -263,13 +263,9 @@ const ShopPage = () => {
     };
 
     const FilterSidebar = () => (
-        // Changed `fixed` to `absolute` for mobile and ensure `lg:relative` for larger screens.
-        // `top-0` is added to position correctly within the `relative` parent `section`.
         <div className={`
-            absolute top-0 left-0 w-64 bg-white z-50 transform transition-transform duration-300 ease-in-out
-            lg:relative lg:w-1/4 lg:translate-x-0 lg:p-6 lg:rounded-lg lg:shadow-md lg:h-fit
-            ${showMobileFilters ? 'translate-x-0' : '-translate-x-full'}
-            overflow-y-auto pt-6
+            ${showMobileFilters ? 'fixed inset-y-0 left-0 w-64 bg-white z-50 transform translate-x-0 overflow-y-auto pt-6' : 'hidden'}
+            lg:block lg:relative lg:w-1/4 lg:translate-x-0 lg:p-6 lg:rounded-lg lg:shadow-md
         `}>
             {/* Close button for mobile filters */}
             <div className="lg:hidden flex justify-end p-4">
@@ -474,7 +470,7 @@ const ShopPage = () => {
             </section>
 
             <section className="py-12 md:py-16 bg-gray-50 min-h-screen">
-                <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8 relative"> {/* Added relative for overlay */}
+                <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8 relative">
                     {/* Filter Sidebar - Now responsive */}
                     <FilterSidebar />
 
@@ -499,7 +495,7 @@ const ShopPage = () => {
                             </button>
 
                             <div className="flex items-center gap-4">
-                                <span className="text-gray-600 hidden sm:block">Sort by:</span> {/* Hide on tiny screens */}
+                                <span className="text-gray-600 hidden sm:block">Sort by:</span>
                                 <select
                                     value={sortOption}
                                     onChange={(e) => setSortOption(e.target.value)}
