@@ -177,7 +177,7 @@ const WishlistPage = () => {
                                                 title="Add to Cart"
                                             >
                                                 <FaShoppingCart className="mr-1 sm:mr-2" />
-                                                <span className="hidden sm:inline">Add to Cart</span>
+                                                <span className="hidden sm:inline">Cart</span>
                                             </button>
                                         </div>
                                     </div>
