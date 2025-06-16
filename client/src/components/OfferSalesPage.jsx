@@ -8,7 +8,7 @@ const PRODUCTS_PER_PAGE = 9;
 
 const OfferSalesPage = () => {
   const { offerProducts, loading, error } = useProducts();
-  const [gridView, setGridView] = useState(true); // Default to grid view
+  const [gridView, setGridView] = useState(true); 
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate total pages
@@ -22,7 +22,7 @@ const OfferSalesPage = () => {
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top on page change
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Reset to first page if offerProducts change (e.g., after filtering)
@@ -68,7 +68,7 @@ const OfferSalesPage = () => {
 
       {/* Product Grid/List and View Toggles */}
       <section className="product-list-section">
-        <div className="flex justify-between items-center mb-6 px-4 sm:px-0"> {/* Added padding for small screens */}
+        <div className="flex justify-between items-center mb-6 px-4 sm:px-0"> 
           <h2 className="text-3xl font-bold text-gray-800">Our Exclusive Deals</h2>
           <div className="flex gap-2">
             <button
@@ -91,10 +91,7 @@ const OfferSalesPage = () => {
         {/* Product Display Area */}
         <div className={`${gridView ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}`}>
           {paginatedProducts.map(product => (
-            // Ensure you pass the correct product object structure to ProductCard
-            // Based on your ProductContext, 'offerProducts' is already an array of products.
-            // If your API returns { _id, product: { name, price, ... } } then use product.product.
-            // If it returns { _id, name, price, ... } directly, just use product.
+           
             <ProductCard key={product._id} product={product.product} isListView={!gridView} />
           ))}
         </div>

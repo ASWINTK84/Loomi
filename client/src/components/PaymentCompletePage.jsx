@@ -1,7 +1,7 @@
-// src/pages/PaymentCompletePage.jsx
+
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext'; // Assuming you clear cart after order
+import { useCart } from '../context/CartContext'; 
 import axios from 'axios';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
@@ -9,32 +9,29 @@ import { toast } from 'react-toastify';
 
 
 const PaymentCompletePage = () => {
-    const { state } = useLocation(); // To get data passed from navigate
+    const { state } = useLocation(); 
     const navigate = useNavigate();
     const { clearCart } = useCart();
-    const { token } = useContext(AuthContext); // Assuming you need token for API calls
+    const { token } = useContext(AuthContext); 
 
     const orderId = state?.orderId;
     const paymentMethod = state?.paymentMethod;
-    const totalAmount = state?.totalAmount; // Only relevant for online payments
+    const totalAmount = state?.totalAmount; 
 
     useEffect(() => {
-        // Redirect if no orderId is found (e.g., direct access)
+        
         if (!orderId) {
             navigate('/');
             return;
         }
 
-        // For online payments, this is where you'd typically make a call to your backend
-        // to confirm the payment and update the order status from 'Pending Payment' to 'Paid'.
-        // This is a simplified example; a real implementation would involve checking payment gateway status.
         if (paymentMethod === 'Online Payment') {
             const confirmOnlinePayment = async () => {
                 try {
-                    // This API call would confirm the payment status with your backend
-                    // and update the order status.
+                  
+                   
                     const response = await axios.post(`https://loomibackend.onrender.com/api/v1/order/confirm-payment/${orderId}`, {
-                        paymentStatus: 'Paid', // This should come from a payment gateway callback/webhook
+                        paymentStatus: 'Paid',
                     }, {
                         headers: {
                             'Content-Type': 'application/json',
@@ -44,7 +41,7 @@ const PaymentCompletePage = () => {
 
                     if (response.data.success) {
                         console.log(`Order ${orderId} status updated to Paid.`);
-                        // Optionally, show a success message here
+                       
                     } else {
                         console.error('Failed to confirm online payment on backend:', response.data.message);
                         
@@ -59,12 +56,10 @@ const PaymentCompletePage = () => {
             confirmOnlinePayment();
         }
 
-        // Clear the cart once the order process is complete
-        // For online payments, you might want to clear it *after* backend payment confirmation
-        // For simplicity, clearing it here.
+      
         clearCart();
 
-    }, [orderId, paymentMethod, navigate, clearCart, token]); // Add token to dependency array
+    }, [orderId, paymentMethod, navigate, clearCart, token]); 
 
 
     if (!orderId) {

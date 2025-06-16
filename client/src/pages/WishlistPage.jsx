@@ -12,7 +12,7 @@ const WishlistPage = () => {
     const { offerProducts } = useProducts();
     const { addToCart } = useCart(); 
 
-    // Helper function to format price in Indian Rupees (INR)
+   
     const formatPrice = (price) => {
         if (typeof price !== 'number' || isNaN(price)) return 'N/A';
         return new Intl.NumberFormat('en-IN', {
@@ -139,7 +139,7 @@ const WishlistPage = () => {
                                         <img
                                             src={
                                                 product.imageUrl ||
-                                                product.images?.[0]?.url || // Prioritize images array if available
+                                                product.images?.[0]?.url || 
                                                 'https://via.placeholder.com/400x400?text=No+Image'
                                             }
                                             alt={product.name}

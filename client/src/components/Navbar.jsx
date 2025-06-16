@@ -33,7 +33,7 @@ export default function Navbar() {
     const { wishlist } = useWishlist();
 
     const navigate = useNavigate();
-    const dropdownRef = useRef(); // For desktop user dropdown
+    const dropdownRef = useRef(); 
 
     const handleCategoryChange = (e) => {
         const categoryName = e.target.value;
@@ -77,7 +77,7 @@ export default function Navbar() {
             <div className="w-full font-sans sticky top-0 z-50 bg-white shadow-sm">
                 <div className="bg-blue-50">
                     <div className="container mx-auto flex items-center justify-between px-3 py-5 lg:px-4 lg:py-6">
-                        {/* Logo - Increased text size */}
+                        
                         <div
                             onClick={() => navigate('/')}
                             className="flex items-center space-x-1 sm:space-x-2 text-gray-900 hover:opacity-80 cursor-pointer"
@@ -209,10 +209,9 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Always-Visible Secondary Mobile Navigation (Shop, Home, Sale) */}
-            {/* This navigation will appear below the main header on mobile screens */}
+           
             <nav className="sticky top-[72px] z-40 bg-white shadow-sm lg:hidden border-b border-gray-200">
-                <ul className="flex justify-around items-center py-2"> {/* Reduced padding for smaller size */}
+                <ul className="flex justify-around items-center py-2"> 
                     <li>
                         <button
                             onClick={() => navigate('/')}
@@ -240,7 +239,7 @@ export default function Navbar() {
                 </ul>
             </nav>
 
-            {/* Non-sticky Secondary Nav (Desktop Only) */}
+            
             <nav className="bg-gray-50 border-t border-gray-200 hidden lg:block">
                 <div className="container mx-auto flex items-center justify-between px-4 py-4">
                     <ul className="flex flex-wrap items-center gap-x-8 gap-y-2 text-gray-800 font-semibold">
@@ -327,7 +326,7 @@ export default function Navbar() {
                         </ul>
                     </li>
 
-                    {/* Support Contact */}
+                   
                     <li className="mt-4 border-t border-gray-200 pt-4">
                         <h3 className="text-lg font-semibold text-gray-500 mb-2">Need Help?</h3>
                         <div className="flex items-center gap-2 text-base text-gray-700">
@@ -337,7 +336,7 @@ export default function Navbar() {
                     </li>
                 </ul>
             </nav>
-            {/* END: Main Mobile Menu Drawer */}
+            
         </>
     );
 }

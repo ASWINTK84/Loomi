@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useCategory } from '../context/CategoryContext';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
-import { FaChevronLeft, FaTag, FaRulerCombined, FaPalette, FaShoppingCart, FaSpinner, FaHeart, FaStar } from 'react-icons/fa'; // Removed FaExchangeAlt
+import { FaChevronLeft, FaTag, FaRulerCombined, FaPalette, FaShoppingCart, FaSpinner, FaHeart, FaStar } from 'react-icons/fa'; 
 import { toast } from 'react-toastify';
 import { useWishlist } from '../context/WishlistContext';
 
@@ -175,17 +175,17 @@ const SingleProductPage = () => {
         }
 
         addToCart(product, quantity, selectedSize, selectedColor);
-        // toast.success(`${product.name} added to cart!`);
+        
     };
 
-    // Placeholder for product rating and review count
-    const productRating = product.rating || 4.5; // Example rating
-    const reviewCount = product.reviewCount || 120; // Example review count
+    
+    const productRating = product.rating || 4.5;
+    const reviewCount = product.reviewCount || 120; 
     
     // Handles Add/Remove from Wishlist
     const handleWishlistClick = (e) => {
-        e.stopPropagation(); // Prevent card click event from bubbling up
-        e.preventDefault(); // Prevent default link behavior if inside a link
+        e.stopPropagation(); 
+        e.preventDefault(); 
 
         if (isInWishlist(product._id)) {
             removeFromWishlist(product._id);

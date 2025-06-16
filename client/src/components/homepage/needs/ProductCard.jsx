@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaStar, FaStarHalfAlt, FaEye, FaTimes, FaShoppingCart } from 'react-icons/fa';
-import { FaHeart as FarHeart } from 'react-icons/fa'; // Outline Heart for Far (Regular)
-import { FaHeart as FasHeart } from 'react-icons/fa'; // Solid Heart for Fas (Solid)
+import { FaHeart as FarHeart } from 'react-icons/fa'; 
+import { FaHeart as FasHeart } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom';
 import { useProducts } from '../../../context/ProductContext';
 import { useCart } from '../../../context/CartContext';
@@ -39,7 +39,7 @@ const ProductCard = ({ product, isListView = false }) => {
         if (product.colors && product.colors.length > 0) {
             setSelectedCardColor(product.colors[0]);
         } else {
-            setSelectedCardColor('Default Color'); // Fallback for products without specific colors
+            setSelectedCardColor('Default Color'); 
         }
 
         // Initialize for Quick View modal selectors (will be re-initialized when modal opens too, for redundancy)
@@ -70,7 +70,7 @@ const ProductCard = ({ product, isListView = false }) => {
                 setSelectedQuickViewColor('Default Color');
             }
         }
-    }, [isQuickViewOpen, product.sizes, product.colors]); // Dependencies ensure it runs on modal open or product changes
+    }, [isQuickViewOpen, product.sizes, product.colors]); 
 
     // Find if there's an active offer for this product
     const currentOffer = Array.isArray(offerProducts)
@@ -108,11 +108,11 @@ const ProductCard = ({ product, isListView = false }) => {
 
     // Helper to determine text color for contrast on colored buttons (for checkmark)
     const isLightColor = (color) => {
-        if (!color || typeof color !== 'string') return true; // Default to light if color is invalid
+        if (!color || typeof color !== 'string') return true; 
 
         let hexColor = color.toLowerCase().trim();
 
-        // Standardize common color names to hex for reliable processing
+        // Standardize common color names to hex 
         const namedColors = {
             black: '#000000', white: '#FFFFFF', red: '#FF0000', green: '#008000', blue: '#0000FF',
             yellow: '#FFFF00', cyan: '#00FFFF', magenta: '#FF00FF', gray: '#808080',
@@ -128,25 +128,25 @@ const ProductCard = ({ product, isListView = false }) => {
         } else if (hexColor.startsWith('rgb')) {
             const rgbValues = hexColor.match(/\d+/g)?.map(Number);
             if (rgbValues && rgbValues.length >= 3) {
-                // Convert RGB to HEX
+                
                 hexColor = '#' + rgbValues.slice(0, 3).map(c => ('0' + c.toString(16)).slice(-2)).join('');
             } else {
-                return false; // Invalid RGB format
+                return false; 
             }
         }
 
         if (!hexColor.startsWith('#') || (hexColor.length !== 4 && hexColor.length !== 7)) {
-            // Not a valid hex color after conversion attempts
+          
             console.warn(`isLightColor: Could not parse color "${color}". Assuming dark for safety.`);
             return false;
         }
 
         let r, g, b;
-        if (hexColor.length === 4) { // #RGB short form
+        if (hexColor.length === 4) { 
             r = parseInt(hexColor[1] + hexColor[1], 16);
             g = parseInt(hexColor[2] + hexColor[2], 16);
             b = parseInt(hexColor[3] + hexColor[3], 16);
-        } else { // #RRGGBB long form
+        } else { 
             r = parseInt(hexColor.substring(1, 3), 16);
             g = parseInt(hexColor.substring(3, 5), 16);
             b = parseInt(hexColor.substring(5, 7), 16);
@@ -155,18 +155,18 @@ const ProductCard = ({ product, isListView = false }) => {
         // Calculate Luma (perceived brightness)
         // A more accurate formula than YIQ for determining perceived brightness
         const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-        return luma >= 0.5; // Common threshold for light vs. dark (0.5 is midpoint, 0.7 for strong contrast)
+        return luma >= 0.5; 
     };
 
     // Handles Add to Cart action from the main ProductCard (uses selectedCardSize/Color)
     const handleAddToCartFromCard = (e) => {
-        e.stopPropagation(); // Prevent card click event from bubbling up
-        e.preventDefault(); // Prevent default link behavior if inside a link
+        e.stopPropagation(); 
+        e.preventDefault(); 
 
         let sizeToAddToCart = selectedCardSize;
         let colorToAddToCart = selectedCardColor;
 
-        // Basic validation for selections if product has sizes/colors
+        //  validation for selections if product has sizes/colors
         if (product.sizes && product.sizes.length > 0 && (!sizeToAddToCart || sizeToAddToCart === 'One Size')) {
             toast.error('Please select a size before adding to cart.');
             return;
@@ -195,13 +195,13 @@ const ProductCard = ({ product, isListView = false }) => {
         }
 
         addToCart(product, 1, sizeToAddToCart, colorToAddToCart);
-        setIsQuickViewOpen(false); // Close modal after successful add
+        setIsQuickViewOpen(false); 
     };
 
     // Handles Add/Remove from Wishlist
     const handleWishlistClick = (e) => {
-        e.stopPropagation(); // Prevent card click event from bubbling up
-        e.preventDefault(); // Prevent default link behavior if inside a link
+        e.stopPropagation(); 
+        e.preventDefault(); 
 
         if (isInWishlist(product._id)) {
             removeFromWishlist(product._id);
@@ -220,16 +220,14 @@ const ProductCard = ({ product, isListView = false }) => {
                             ${isListView ? 'flex flex-col md:flex-row items-stretch p-4 gap-4' : 'flex flex-col p-4'}`}
             >
                 {/* Product Image and Offer Badge */}
-                {/* Link to product detail page */}
                 <Link to={`/product/${product._id}`} className={`${isListView ? 'w-full md:w-1/3 flex-shrink-0' : 'block'}`}>
                     <div className={`${isListView ? 'w-full h-48 md:h-32' : 'h-48'} mb-4 flex items-center justify-center relative`}>
                         <img
                             src={imageUrl}
                             alt={product.name || 'Product image'}
-                            // object-contain ensures the image fits within its container without cropping
                             className={`${isListView ? 'max-w-full max-h-full object-contain' : 'max-w-full max-h-full object-contain'}`}
                             loading="lazy"
-                            draggable={false} // Prevent image dragging
+                            draggable={false} 
                         />
                         {currentOffer && (
                             <span className="absolute top-0 left-0 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-br-lg rounded-tl-lg shadow-md">
@@ -327,7 +325,7 @@ const ProductCard = ({ product, isListView = false }) => {
                         </div>
                     )}
 
-                    {/* Add to Cart Button (Always visible on card) */}
+                    
                     <button
                         onClick={handleAddToCartFromCard}
                         className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 text-base font-semibold flex items-center justify-center"
@@ -339,11 +337,11 @@ const ProductCard = ({ product, isListView = false }) => {
                 </div>
 
                 {/* Top-Right Action Buttons (Wishlist, Quick View) */}
-                {/* Updated for mobile visibility: Always visible on small screens, hover on larger screens in grid view. */}
+                
                 <div className={`absolute top-4 right-4 z-20 flex flex-col space-y-2 transition-opacity duration-300
                                  ${isListView 
-                                    ? 'relative top-auto right-auto mt-4 md:mt-0' // List view: always relative and visible
-                                    : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100' // Grid view: always visible on small screens, hover on larger
+                                    ? 'relative top-auto right-auto mt-4 md:mt-0' 
+                                    : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100' 
                                  }`}
                 >
                     {/* Wishlist Button */}
@@ -360,9 +358,9 @@ const ProductCard = ({ product, isListView = false }) => {
                     {/* Quick View Button */}
                     <button
                         onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click event from bubbling up
-                            e.preventDefault(); // Prevent default link behavior if inside a link
-                            setIsQuickViewOpen(true); // Open the quick view modal
+                            e.stopPropagation(); 
+                            e.preventDefault(); 
+                            setIsQuickViewOpen(true); 
                         }}
                         className="bg-gray-100 text-gray-600 p-2 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200"
                         aria-label="Quick view"
@@ -377,13 +375,13 @@ const ProductCard = ({ product, isListView = false }) => {
             {isQuickViewOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 animate-fadeIn"
-                    onClick={() => setIsQuickViewOpen(false)} // Close modal when clicking outside
+                    onClick={() => setIsQuickViewOpen(false)} 
                     role="dialog"
                     aria-modal="true"
                 >
                     <div
                         className="bg-white rounded-xl p-6 shadow-2xl max-w-sm sm:max-w-lg w-full relative max-h-[95vh] overflow-y-auto transform scale-95 animate-scaleIn"
-                        onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside
+                        onClick={(e) => e.stopPropagation()} 
                     >
                         {/* Close button for the modal */}
                         <button
@@ -475,7 +473,7 @@ const ProductCard = ({ product, isListView = false }) => {
                             </div>
                         )}
 
-                        {/* Action Buttons in Modal */}
+                        {/* Action Buttons  */}
                         <div className="flex flex-col space-y-3">
                             <button
                                 onClick={handleAddToCartFromQuickView}
@@ -486,7 +484,7 @@ const ProductCard = ({ product, isListView = false }) => {
                             <Link
                                 to={`/product/${product._id}`}
                                 className="text-center text-blue-700 border border-blue-700 px-4 py-2 sm:py-2.5 rounded-lg hover:bg-blue-50 transition-colors duration-200 block w-full text-sm sm:text-md font-medium"
-                                onClick={() => setIsQuickViewOpen(false)} // Close modal when navigating to full details
+                                onClick={() => setIsQuickViewOpen(false)} 
                             >
                                 View Full Details
                             </Link>

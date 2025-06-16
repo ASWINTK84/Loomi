@@ -1,10 +1,9 @@
-// components/PageHeader.jsx
 import React from 'react';
-import { Link } from 'react-router-dom'; // Assuming you are using React Router for navigation
+import { Link } from 'react-router-dom'; 
 
 const PageHeader = ({ title, breadcrumbs }) => {
   return (
-    <div className="bg-white py-6 shadow-sm"> {/* White background with a subtle shadow */}
+    <div className="bg-white py-6 shadow-sm"> 
       <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between">
         {/* Title */}
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 sm:mb-0">

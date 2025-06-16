@@ -7,7 +7,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
 
-    // Logic to ensure 5 pages are always shown if possible, centered around current page
+    
     if (currentPage <= 3) {
         endPage = Math.min(5, totalPages);
     }
@@ -15,8 +15,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         startPage = Math.max(1, totalPages - 4);
     }
 
-    // Adjust start/end page if the total pages shown are less than 5 and totalPages > 5
-    // This makes sure you still get 5 buttons even if you're near the start/end
+  
     const numVisiblePages = endPage - startPage + 1;
     if (totalPages > 5 && numVisiblePages < 5) {
       if (currentPage <= 3) { // Near start
@@ -31,7 +30,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         pageNumbers.push(i);
     }
 
-    // Helper function for page navigation
+    
     const goToPage = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
             onPageChange(pageNumber);

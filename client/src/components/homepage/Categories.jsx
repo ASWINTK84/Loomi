@@ -80,15 +80,7 @@ const Categories = () => {
     );
   }
 
-  // const categoryImageUrls = [
-  //   "https://th.bing.com/th/id/OIP.o_OkNsfokkO-CRwVxqz0iQHaE7?rs=1&pid=ImgDetMain",
-  //   "https://th.bing.com/th/id/OIP.lG_isUmIzlc-QzEGIzQ_HQHaHa?rs=1&pid=ImgDetMain",
-  //   "https://www.popoptiq.com/wp-content/uploads/2019/01/4-25-1-870x646.jpg",
-  //   "https://www.blufashion.com/wp-content/uploads/2023/12/Style-Accessories-Every-Man-Needs.jpg",
-  //   "https://st2.depositphotos.com/2289871/8526/i/450/depositphotos_85262756-stock-photo-two-happy-asian-children-sitting.jpg",
-  //   "https://5.imimg.com/data5/SELLER/Default/2021/9/UL/KV/AT/8311874/winter-wear-1000x1000.png",
-  //   "https://mir-s3-cdn-cf.behance.net/projects/404/4f8032186976273.Y3JvcCw0NTk2LDM1OTUsMjYxLDA.png"
-  // ];
+
 
 
    const categoryImageUrls = [

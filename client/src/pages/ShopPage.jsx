@@ -13,7 +13,7 @@ const ShopPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Filter states
+ 
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedSizes, setSelectedSizes] = useState([]);
     const [selectedColors, setSelectedColors] = useState([]);
@@ -21,23 +21,23 @@ const ShopPage = () => {
     const [sortOption, setSortOption] = useState('latest');
     const [gridView, setGridView] = useState(true);
 
-    // Mobile filter state
+   
     const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-    // Pagination states
+
     const [currentPage, setCurrentPage] = useState(1);
     const PRODUCTS_PER_PAGE = 9;
 
-    // Filtered & paginated products to display
+   
     const [displayedProducts, setDisplayedProducts] = useState([]);
     const [loadingFilters, setLoadingFilters] = useState(true);
     const [errorFilters, setErrorFilters] = useState(null);
 
-    // States for dynamically available filter options
+    
     const [availableSizes, setAvailableSizes] = useState([]);
     const [availableColors, setAvailableColors] = useState([]);
 
-    // Effect to fetch all products initially
+    
     useEffect(() => {
         const fetchProducts = async () => {
             setLoadingInitial(true);
@@ -54,7 +54,7 @@ const ShopPage = () => {
         fetchProducts();
     }, []);
 
-    // Effect to extract unique sizes and colors from fetched products
+   
     useEffect(() => {
         if (allProducts.length > 0) {
             const sizes = new Set();
@@ -72,17 +72,17 @@ const ShopPage = () => {
         }
     }, [allProducts]);
 
-    // NEW: Effect to read URL parameter and set initial category filter ONLY ONCE
+    
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const categoryFromUrl = params.get('category');
         if (categoryFromUrl && apiCategories.length > 0) {
             const matchedCategory = apiCategories.find(cat => cat.name === categoryFromUrl);
             if (matchedCategory) {
-                // Set initial category from URL only if not already selected
+               
                 setSelectedCategories(prev => {
                     if (!prev.includes(matchedCategory.name)) {
-                        return [matchedCategory.name]; // Start with only this category if URL is present
+                        return [matchedCategory.name]; 
                     }
                     return prev;
                 });
@@ -140,10 +140,10 @@ const ShopPage = () => {
 
         setDisplayedProducts(filtered);
         setLoadingFilters(false);
-        setCurrentPage(1); // Reset to first page when filters change
+        setCurrentPage(1); 
     }, [allProducts, selectedCategories, selectedSizes, selectedColors, priceRange, sortOption, apiCategories]);
 
-    // Effect to re-apply filters whenever filter dependencies change
+   
     useEffect(() => {
         if (allProducts.length > 0) {
             applyFilters();
@@ -211,10 +211,9 @@ const ShopPage = () => {
         setSortOption('latest');
         setCurrentPage(1);
         navigate('/shop', { replace: true });
-        setShowMobileFilters(false); // Close filters on clear
+        setShowMobileFilters(false); 
     };
 
-    // Helper to determine text color for contrast on colored buttons
     const isLightColor = (color) => {
         if (!color || typeof color !== 'string') return true;
         const namedColors = {
@@ -246,11 +245,11 @@ const ShopPage = () => {
         }
 
         let r, g, b;
-        if (hexColor.length === 4) { // #RGB
+        if (hexColor.length === 4) { 
             r = parseInt(hexColor[1] + hexColor[1], 16);
             g = parseInt(hexColor[2] + hexColor[2], 16);
             b = parseInt(hexColor[3] + hexColor[3], 16);
-        } else if (hexColor.length === 7) { // #RRGGBB
+        } else if (hexColor.length === 7) { 
             r = parseInt(hexColor.substring(1, 3), 16);
             g = parseInt(hexColor.substring(3, 5), 16);
             b = parseInt(hexColor.substring(5, 7), 16);
@@ -278,7 +277,7 @@ const ShopPage = () => {
                 </button>
             </div>
 
-            <div className="p-6 lg:p-0"> {/* Add padding for mobile view content */}
+            <div className="p-6 lg:p-0"> 
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-gray-800">Filters:</h3>
                     <button onClick={handleClearAllFilters} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Clear All</button>
@@ -340,7 +339,7 @@ const ShopPage = () => {
                                     style={{ backgroundColor: color }}
                                     aria-label={`Color ${color}`}
                                 >
-                                    {selectedColors.includes(color) && ( // Add a checkmark for selected colors
+                                    {selectedColors.includes(color) && ( 
                                         <span className={`text-sm ${isLightColor(color) ? 'text-gray-800' : 'text-white'}`}>✓</span>
                                     )}
                                 </button>
@@ -380,7 +379,7 @@ const ShopPage = () => {
         </div>
     );
 
-    // Pagination buttons component (no changes needed here)
+    
     const Pagination = () => {
         if (totalPages <= 1) return null;
 
@@ -471,14 +470,14 @@ const ShopPage = () => {
 
             <section className="py-12 md:py-16 bg-gray-50 min-h-screen">
                 <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8 relative">
-                    {/* Filter Sidebar - Now responsive */}
+                    
                     <FilterSidebar />
 
-                    {/* Overlay for mobile filters */}
+                    
                     {showMobileFilters && (
                         <div
                             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-                            onClick={() => setShowMobileFilters(false)} // Close filters when clicking outside
+                            onClick={() => setShowMobileFilters(false)} 
                         ></div>
                     )}
 

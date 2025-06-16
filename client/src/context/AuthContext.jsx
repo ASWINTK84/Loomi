@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Failed to parse user data from localStorage:', err);
-      // If parsing fails, clear both token and user to prevent inconsistent state
+
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       setIsLoggedIn(false);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
     } catch (err) {
       console.error('Login failed to save user data to localStorage:', err);
-      // Optionally clear if saving fails too, but less common
+      
     }
   };
 

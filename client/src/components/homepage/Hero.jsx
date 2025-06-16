@@ -1,4 +1,3 @@
-// src/components/Hero.jsx
 import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -39,7 +38,7 @@ const Hero = () => {
     );
   }
 
-  // FIX IS HERE: Directly use offerProducts as it's already the array
+ 
   // Add a check to ensure it's an array before using
   const offers = Array.isArray(offerProducts) ? offerProducts : [];
 
@@ -112,7 +111,7 @@ const Hero = () => {
             {/* Sidebar Featured Cards */}
             <div className="w-full lg:w-1/3 flex flex-col gap-8 justify-between">
               {(offers
-                .filter(offer => offer.product) // Only include offers that have a product
+                .filter(offer => offer.product) 
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 2)
               ).map((offer) => {

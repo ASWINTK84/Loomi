@@ -1,4 +1,4 @@
-// src/context/ProductContext.js
+
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 
@@ -48,7 +48,7 @@ export const ProductProvider = ({ children }) => {
     allProducts,
     loading,
     error,
-    refetchProducts: fetchProducts // Expose refetch function if needed
+    refetchProducts: fetchProducts 
   };
 
   return (

@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
 
-          {/* Column 1: Brand Info & Social Media */}
+          
           <div>
             <h3 className="text-white text-lg font-bold mb-3">LoOmi</h3>
             <p className="mb-3 text-xs leading-relaxed">
@@ -24,7 +24,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
+          
           <div>
             <h3 className="text-white text-md font-semibold mb-3">Quick Links</h3>
             <ul className="space-y-2">
@@ -36,7 +36,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Customer Service */}
+          
           <div>
             <h3 className="text-white text-md font-semibold mb-3">Customer Care</h3>
             <ul className="space-y-2">
@@ -48,7 +48,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Newsletter */}
+         
           <div>
             <h3 className="text-white text-md font-semibold mb-3">Subscribe</h3>
             <p className="text-xs mb-3">
@@ -70,7 +70,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Footer Bottom */}
+       
         <div className="border-t border-gray-700 pt-4 flex flex-col md:flex-row items-center justify-between">
           <p className="mb-3 md:mb-0">&copy; {currentYear} LoOmi. All rights reserved.</p>
           <div className="flex space-x-3 text-lg">

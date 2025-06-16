@@ -12,7 +12,7 @@ const CheckoutPage = () => {
     const [paymentMethod, setPaymentMethod] = useState('cod');
     const navigate = useNavigate();
 
-    // console.log(cartItems); // You can keep this for debugging if needed
+    // console.log(cartItems); 
 
 
     const [address, setAddress] = useState({
@@ -31,7 +31,7 @@ const CheckoutPage = () => {
     const [loadingOrder, setLoadingOrder] = useState(false);
 
     useEffect(() => {
-        // Only load Razorpay SDK if needed for payment steps
+        
         if (currentStep === 2 || currentStep === 3) {
             const script = document.createElement('script');
             script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -42,7 +42,7 @@ const CheckoutPage = () => {
             document.body.appendChild(script);
 
             return () => {
-                // Clean up script on unmount
+                
                 if (document.body.contains(script)) {
                     document.body.removeChild(script);
                 }
@@ -60,8 +60,8 @@ const CheckoutPage = () => {
     const handlePincodeChange = async (e) => {
         const newPincode = e.target.value;
         setAddress(prevAddress => ({ ...prevAddress, pincode: newPincode }));
-        setLocationDetails(null); // Clear previous location details
-        setPincodeError(''); // Clear previous error
+        setLocationDetails(null);
+        setPincodeError(''); 
 
         if (newPincode.length === 6) {
             setLoadingPincode(true);
@@ -78,29 +78,29 @@ const CheckoutPage = () => {
                     });
                     setAddress(prevAddress => ({
                         ...prevAddress,
-                        city: postOffice.District, // Auto-fill city from pincode
+                        city: postOffice.District, 
                     }));
                 } else {
                     setPincodeError('Invalid Pincode or no details found. Please double-check.');
-                    setAddress(prevAddress => ({ ...prevAddress, city: '' })); // Clear city if pincode fails
+                    setAddress(prevAddress => ({ ...prevAddress, city: '' })); 
                 }
             } catch (error) {
                 console.error('Error fetching pincode details:', error);
                 setPincodeError('Could not fetch pincode details. Please try again.');
-                setAddress(prevAddress => ({ ...prevAddress, city: '' })); // Clear city if API call fails
+                setAddress(prevAddress => ({ ...prevAddress, city: '' })); 
             } finally {
                 setLoadingPincode(false);
             }
         } else if (newPincode.length > 0 && newPincode.length < 6) {
             setPincodeError('Pincode must be 6 digits long.');
-            setAddress(prevAddress => ({ ...prevAddress, city: '' })); // Clear city if pincode is incomplete/invalid length
+            setAddress(prevAddress => ({ ...prevAddress, city: '' })); 
         } else if (newPincode.length === 0) {
-            setAddress(prevAddress => ({ ...prevAddress, city: '' })); // Clear city if pincode is cleared
+            setAddress(prevAddress => ({ ...prevAddress, city: '' })); 
         }
     };
 
     useEffect(() => {
-        // If pincode becomes empty, clear location details and city
+        
         if (address.pincode === '') {
             setLocationDetails(null);
             setPincodeError('');
@@ -148,21 +148,21 @@ const CheckoutPage = () => {
         setCurrentStep(prevStep => prevStep - 1);
     };
 
-    // Helper function to call your backend's placeOrder endpoint
+  
     const saveOrderToBackend = async (paymentStatus, paymentInfo = {}) => {
         try {
             const orderDetails = {
-                // Remove userId here; backend will get user from token
+             
                 items: cartItems.map(item => ({
                     product: {
                         _id: item.product._id,
                         name: item.product.name,
-                        image: item.product.imageUrl, // Ensure you use imageUrl here
+                        image: item.product.imageUrl, 
                         price: item.product.price,
                     },
                     quantity: item.quantity,
-                    size: item.size,    // Add size
-                    color: item.color,  // Add color
+                    size: item.size,    
+                    color: item.color,  
                 })),
                 totalAmount: cartTotal,
                 offerPrice: cartTotal,
@@ -218,14 +218,14 @@ const CheckoutPage = () => {
             await saveOrderToBackend("COD"); 
         } else if (paymentMethod === 'online') {
             try {
-                // Step 1: Create Razorpay Order on your backend
+               
                 const razorpayOrderResponse = await fetch(`${API_BASE_URL}/api/orders/razorpay-order`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        amount: cartTotal, // Send total amount to your backend
+                        amount: cartTotal, 
                     }),
                 });
 
@@ -239,14 +239,14 @@ const CheckoutPage = () => {
 
                 // Step 2: Open Razorpay Checkout popup
                 const options = {
-                    key: "rzp_test_SM2gVwvabL5PdV", // Replace with your actual Razorpay Key ID
+                    key: "rzp_test_SM2gVwvabL5PdV", 
                     amount: razorpayOrder.amount,
                     currency: razorpayOrder.currency,
                     name: 'E-commerce Store',
                     description: 'Order Payment',
                     order_id: razorpayOrder.id,
                     handler: async function (response) {
-                        // This callback is triggered when payment is successful
+                        
                         await saveOrderToBackend("ONLINE", {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
@@ -255,7 +255,7 @@ const CheckoutPage = () => {
                     },
                     prefill: {
                         name: address.name,
-                        email: 'customer@example.com', // You might want to get actual user email
+                        email: 'customer@example.com', 
                         contact: address.phone,
                     },
                     notes: {
@@ -277,13 +277,13 @@ const CheckoutPage = () => {
                 rzp1.on('payment.failed', function (response) {
                     toast.error('Payment failed: ' + response.error.description + '. Please try again.')
                     console.error('Razorpay Payment Failed:', response.error);
-                    setLoadingOrder(false); // Stop loading if payment fails
+                    setLoadingOrder(false); 
                 });
 
             } catch (error) {
                 console.error('Error during online payment process:', error);
                 toast.error(`An error occurred during online payment: ${error.message}`)
-                setLoadingOrder(false); // Stop loading if API call fails
+                setLoadingOrder(false); 
             }
         }
     };
@@ -503,18 +503,18 @@ const CheckoutPage = () => {
                                         <p className="text-gray-600 text-center py-4">Your cart is empty.</p>
                                     ) : (
                                         cartItems.map((item) => (
-                                            // Updated key to include size and color for uniqueness
+                                            
                                             <div key={`${item.product._id}-${item.size || ''}-${item.color || ''}`} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border border-gray-100">
                                                 <div className="flex items-center gap-4">
                                                     <img src={item.product.imageUrl} alt={item.product.name} className="w-16 h-16 object-cover rounded-md border border-gray-200 shadow-sm" />
                                                     <div>
                                                         <p className="font-semibold text-lg text-gray-800">{item.product.name}</p>
                                                         <p className="text-md text-gray-500">Qty: {item.quantity}</p>
-                                                        {/* Display Size and Color if available */}
+                                                    
                                                         {(item.size || item.color) && (
                                                             <p className="text-sm text-gray-500">
                                                                 {item.size && `Size: ${item.size}`}
-                                                                {item.size && item.color && ', '} {/* Add comma only if both exist */}
+                                                                {item.size && item.color && ', '} 
                                                                 {item.color && `Color: ${item.color}`}
                                                             </p>
                                                         )}
