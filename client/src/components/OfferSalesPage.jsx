@@ -110,9 +110,9 @@ const OfferSalesPage = () => {
       <section className="cta-section text-center py-12 bg-blue-100 rounded-lg shadow-md mb-10">
         <h2 className="text-4xl font-bold text-blue-800 mb-4">Don't Miss Out!</h2>
         <p className="text-lg text-gray-700 mb-6">These amazing offers won't last forever. Secure your favorites now!</p>
-        <button className="shop-all-offers-button bg-orange-600 text-white font-semibold py-3 px-8 rounded-full text-lg hover:bg-orange-700 transition-colors duration-300 transform hover:scale-105 shadow-lg">
+        {/* <button className="shop-all-offers-button bg-orange-600 text-white font-semibold py-3 px-8 rounded-full text-lg hover:bg-orange-700 transition-colors duration-300 transform hover:scale-105 shadow-lg">
           Shop All Offers Now!
-        </button>
+        </button> */}
       </section>
     </div>
   );
