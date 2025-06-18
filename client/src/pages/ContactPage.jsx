@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FaWhatsapp } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; // Import toast
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -14,23 +14,26 @@ const ContactPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess('');
-    setError('');
+    setError(''); // Clear previous errors
     try {
       const { data } = await axios.post('https://loomibackend.onrender.com/api/contact', form);
-      setSuccess(data.message);
-      setForm({ name: '', email: '', message: '' });
+      // Display success toast
+      toast.success(data.message || 'Message sent successfully!');
+      setForm({ name: '', email: '', message: '' }); // Clear the form
     } catch (err) {
-      setError(err.response?.data?.error || 'Something went wrong');
+      const errorMessage = err.response?.data?.error || 'Something went wrong. Please try again.';
+      setError(errorMessage);
+      // Display error toast
+      toast.error(errorMessage);
     }
   };
 
-  const whatsappNumber = '919539697664'; 
+  const whatsappNumber = '919539697664';
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f0f8ff] px-4 py-10">
       <div className="max-w-5xl w-full bg-white shadow-lg rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
-        
+
         <div className="h-96 md:h-auto">
           <img
             src="https://i.mdel.net/i/db/2023/3/1912109/1912109-800w.jpg"
@@ -39,7 +42,6 @@ const ContactPage = () => {
           />
         </div>
 
-       
         <div className="p-8 flex flex-col justify-between">
           <div>
             <h2 className="text-3xl font-semibold text-gray-900 mb-6">Contact Us</h2>
@@ -72,21 +74,17 @@ const ContactPage = () => {
                 className="w-full border-b border-gray-300 py-2 h-24 focus:outline-none bg-transparent placeholder:text-gray-500 text-sm resize-none"
               ></textarea>
 
-              {success && <p className="text-green-600 text-sm">{success}</p>}
-              {error && <p className="text-red-600 text-sm">{error}</p>}
-              {/* {success && toast.success("Thank you for contacting us")} */}
+            
 
               <button
                 type="submit"
                 className="mt-2 bg-blue-100 text-black px-6 py-2 text-sm rounded hover:bg-blue-200 transition"
-                onClick={toast.success("Thank you for contacting us")}
               >
                 Contact Us
               </button>
             </form>
           </div>
 
-       
           <div className="mt-8">
             <p className="text-xs text-gray-500 mb-1"><span className="font-semibold">Contact</span> — hiloomi@gmail.com</p>
             <p className="text-xs text-gray-500 mb-4"><span className="font-semibold">Based in</span> — Calicut, Kerala</p>
@@ -100,7 +98,6 @@ const ContactPage = () => {
         </div>
       </div>
 
-      
       <div className="fixed bottom-4 right-4 z-30">
         <a
           href={`https://wa.me/${whatsappNumber}`}
