@@ -74,7 +74,7 @@ const ContactPage = () => {
 
               {success && <p className="text-green-600 text-sm">{success}</p>}
               {error && <p className="text-red-600 text-sm">{error}</p>}
-              {toast.success("Thank you for contacting us")}
+              {success && toast.success("Thank you for contacting us")}
 
               <button
                 type="submit"
