@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FaWhatsapp } from 'react-icons/fa';
-import { toast } from 'react-toastify'; // Import toast
-import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [error, setError] = useState('');
+  // We no longer need a separate 'success' or 'error' state for messages
+  // since react-toastify will handle the display.
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,16 +15,14 @@ const ContactPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
     try {
       const { data } = await axios.post('https://loomibackend.onrender.com/api/contact', form);
-      // Display success toast
+      // Show success toast
       toast.success(data.message || 'Message sent successfully!');
-      setForm({ name: '', email: '', message: '' }); // Clear the form
+      setForm({ name: '', email: '', message: '' }); // Clear the form on success
     } catch (err) {
+      // Show error toast
       const errorMessage = err.response?.data?.error || 'Something went wrong. Please try again.';
-      setError(errorMessage);
-      // Display error toast
       toast.error(errorMessage);
     }
   };
@@ -73,8 +72,6 @@ const ContactPage = () => {
                 required
                 className="w-full border-b border-gray-300 py-2 h-24 focus:outline-none bg-transparent placeholder:text-gray-500 text-sm resize-none"
               ></textarea>
-
-            
 
               <button
                 type="submit"
