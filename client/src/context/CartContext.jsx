@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 export const CartContext = createContext();
 
-export const CartProvider = ({ children }) => {
+export const CartProvider = ({ children ,  navigate }) => {
  const { token, isLoggedIn } = useContext(AuthContext);
  const [cartItems, setCartItems] = useState([]);
  const [cartTotal, setCartTotal] = useState(0);
