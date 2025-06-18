@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/loomi-m8pw.vercel.app/', 
+  base: '/loomi-eight.vercel.app/', 
   plugins: [
     tailwindcss(),
     react()
