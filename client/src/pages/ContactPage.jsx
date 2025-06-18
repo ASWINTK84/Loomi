@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FaWhatsapp } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -77,6 +78,7 @@ const ContactPage = () => {
               <button
                 type="submit"
                 className="mt-2 bg-blue-100 text-black px-6 py-2 text-sm rounded hover:bg-blue-200 transition"
+                onClick={toast.success("Thank you for contacting us")}
               >
                 Contact Us
               </button>
