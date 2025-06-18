@@ -475,58 +475,60 @@ const CheckoutPage = () => {
 
                         {/* Step 3: Order Review */}
                         {currentStep === 3 && (
-                            <div className="space-y-7">
-                                <h2 className="text-2xl font-bold text-gray-800 mb-6">Final Check of Your Order</h2>
+  <div className="space-y-5 sm:space-y-7">
+    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Final Check of Your Order</h2>
 
-                                {/* Address Details for Review */}
-                                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 shadow-sm">
-                                    <h3 className="text-xl font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                        Delivery To
-                                    </h3>
-                                    <p className="text-gray-700 leading-relaxed">
-                                        <strong className="font-medium">Name:</strong> {address.name}<br />
-                                        <strong className="font-medium">Phone:</strong> {address.phone}<br />
-                                        <strong className="font-medium">Address:</strong> {address.addressLine}, {address.landmark ? `${address.landmark}, ` : ''}
-                                        {locationDetails?.area || ''}, {locationDetails?.district || address.city}, {locationDetails?.state || ''} - {address.pincode}
-                                    </p>
-                                    <p className="text-gray-700 mt-3"><strong className="font-medium">Payment Method:</strong> <span className="font-semibold text-indigo-700">{paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment (Razorpay)'}</span></p>
-                                </div>
+    {/* Address Details for Review */}
+    <div className="bg-blue-50 p-4 sm:p-6 rounded-lg border border-blue-200 shadow-sm">
+      <h3 className="text-lg sm:text-xl font-semibold text-blue-800 mb-2 sm:mb-3 flex items-center gap-2">
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        Delivery To
+      </h3>
+      <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+        <strong className="font-medium">Name:</strong> {address.name}<br />
+        <strong className="font-medium">Phone:</strong> {address.phone}<br />
+        <strong className="font-medium">Address:</strong> {address.addressLine}, {address.landmark ? `${address.landmark}, ` : ''}
+        {locationDetails?.area || ''}, {locationDetails?.district || address.city}, {locationDetails?.state || ''} - {address.pincode}
+      </p>
+      <p className="text-gray-700 text-sm sm:text-base mt-2 sm:mt-3">
+        <strong className="font-medium">Payment Method:</strong> <span className="font-semibold text-indigo-700">
+          {paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment (Razorpay)'}
+        </span>
+      </p>
+    </div>
 
-                                {/* Cart Items for Review */}
-                                <h3 className="text-xl font-semibold text-gray-800 mb-4 pt-4 border-t border-gray-100 flex items-center gap-2">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                                    Items in Your Cart
-                                </h3>
-                                <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                                    {cartItems.length === 0 ? (
-                                        <p className="text-gray-600 text-center py-4">Your cart is empty.</p>
-                                    ) : (
-                                        cartItems.map((item) => (
-                                            
-                                            <div key={`${item.product._id}-${item.size || ''}-${item.color || ''}`} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border border-gray-100">
-                                                <div className="flex items-center gap-4">
-                                                    <img src={item.product.imageUrl} alt={item.product.name} className="w-16 h-16 object-cover rounded-md border border-gray-200 shadow-sm" />
-                                                    <div>
-                                                        <p className="font-semibold text-lg text-gray-800">{item.product.name}</p>
-                                                        <p className="text-md text-gray-500">Qty: {item.quantity}</p>
-                                                    
-                                                        {(item.size || item.color) && (
-                                                            <p className="text-sm text-gray-500">
-                                                                {item.size && `Size: ${item.size}`}
-                                                                {item.size && item.color && ', '} 
-                                                                {item.color && `Color: ${item.color}`}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <p className="font-bold text-lg text-gray-900">{formatPrice(item.quantity * item.product.price)}</p>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-                        )}
+    {/* Cart Items for Review */}
+    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4 pt-4 border-t border-gray-100 flex items-center gap-2">
+      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+      Items in Your Cart
+    </h3>
+    <div className="space-y-3 sm:space-y-4 max-h-72 sm:max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+      {cartItems.length === 0 ? (
+        <p className="text-gray-600 text-center py-4">Your cart is empty.</p>
+      ) : (
+        cartItems.map((item) => (
+          <div key={`${item.product._id}-${item.size || ''}-${item.color || ''}`} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border border-gray-100">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <img src={item.product.imageUrl} alt={item.product.name} className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-md border border-gray-200 shadow-sm" />
+              <div>
+                <p className="font-semibold text-base sm:text-lg text-gray-800">{item.product.name}</p>
+                <p className="text-sm sm:text-md text-gray-500">Qty: {item.quantity}</p>
+                {(item.size || item.color) && (
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    {item.size && `Size: ${item.size}`}
+                    {item.size && item.color && ', '}
+                    {item.color && `Color: ${item.color}`}
+                  </p>
+                )}
+              </div>
+            </div>
+            <p className="font-bold text-base sm:text-lg text-gray-900">{formatPrice(item.quantity * item.product.price)}</p>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+)}
 
                         {/* Navigation Buttons */}
                         <div className="mt-12 flex justify-between">
