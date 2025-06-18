@@ -7,7 +7,7 @@ import {
     FaHeart,
     FaBars,
     FaTimes,
-    FaPhoneAlt,
+    FaSearch,
     FaHome,
     FaStore,
     FaTag,
@@ -15,8 +15,7 @@ import {
     FaUserPlus,
     FaUserCircle,
     FaClipboardList,
-    FaSignOutAlt,
-    FaSearch // Added for search functionality
+    FaSignOutAlt
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
@@ -27,7 +26,7 @@ export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [searchTerm, setSearchTerm] = useState(''); // Added for search input
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { cartItems } = useCart();
     const { categories } = useCategory();
@@ -41,8 +40,6 @@ export default function Navbar() {
         const categoryName = e.target.value;
         setSelectedCategory(categoryName);
         navigate(categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : '/shop');
-
-        // Close main mobile menu if a category is selected
         if (isMobileMenuOpen) {
             closeMobileMenu();
         }
@@ -52,8 +49,8 @@ export default function Navbar() {
         e.preventDefault();
         if (searchTerm.trim()) {
             navigate(`/shop?search=${encodeURIComponent(searchTerm.trim())}`);
-            setSearchTerm(''); // Clear search term after navigation
-            closeMobileMenu(); // Close mobile menu if search is performed from there
+            setSearchTerm('');
+            closeMobileMenu();
         }
     };
 
@@ -83,189 +80,163 @@ export default function Navbar() {
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     return (
-        <>
-            {/* Top Info Bar */}
-            <div className="bg-gray-900 text-gray-200 text-xs py-2 hidden sm:block">
-                <div className="container mx-auto flex justify-end px-4">
-                    <span className="flex items-center gap-1">
-                        <FaPhoneAlt className="text-sm text-gray-400" /> 24/7 Support: <strong className="ml-1 text-white">95396-97664</strong>
-                    </span>
+        <div className="w-full font-sans sticky top-0 z-50 bg-white shadow-md">
+            <div className="container mx-auto flex items-center justify-between h-16 px-4"> {/* Fixed height for consistency */}
+
+                {/* LoOmi Logo - Left aligned */}
+                <div
+                    onClick={() => navigate('/')}
+                    className="flex items-center space-x-2 text-gray-900 cursor-pointer flex-shrink-0"
+                >
+                    <img
+                        src="https://avatars.githubusercontent.com/u/68288528?s=200&v=4"
+                        alt="LoOmi Logo"
+                        className="h-7 lg:h-8" // Adjusted slightly for original feel
+                        loading="lazy"
+                    />
+                    <span className="text-2xl lg:text-3xl font-extrabold tracking-tight select-none text-indigo-700">LoOmi</span>
                 </div>
-            </div>
 
-            {/* Main Header */}
-            <div className="w-full font-sans sticky top-0 z-50 bg-white shadow-lg">
-                <div className="container mx-auto flex items-center justify-between px-4 py-4 lg:py-5">
+                {/* Main Navigation Links - Centered on Desktop */}
+                <nav className="hidden md:flex flex-grow justify-center">
+                    <ul className="flex items-center gap-x-8 text-gray-700 font-medium">
+                        <li><button onClick={() => navigate('/')} className="hover:text-indigo-600 transition-colors py-2">Home</button></li>
+                        <li><button onClick={() => navigate('/shop')} className="hover:text-indigo-600 transition-colors py-2">Shop</button></li>
+                        <li><button onClick={() => navigate('/offersalepage')} className="hover:text-indigo-600 transition-colors py-2">Sale</button></li>
+                        {/* Category Dropdown */}
+                        <li className="relative">
+                            <select
+                                className="block bg-transparent text-gray-700 py-2 px-1 rounded-md focus:outline-none focus:ring-0 cursor-pointer appearance-none font-medium hover:text-indigo-600 transition-colors"
+                                value={selectedCategory}
+                                onChange={handleCategoryChange}
+                            >
+                                <option value="">Categories</option> {/* Changed text to simply "Categories" */}
+                                {categories.map(({ _id, name }) => (
+                                    <option key={_id} value={name}>
+                                        {name}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1 text-gray-500">
+                                <FaChevronDown className="h-3 w-3" />
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
 
-                    {/* LoOmi Logo */}
-                    <div
-                        onClick={() => navigate('/')}
-                        className="flex items-center space-x-2 text-gray-900 cursor-pointer flex-shrink-0"
-                    >
-                        <img
-                            src="https://avatars.githubusercontent.com/u/68288528?s=200&v=4"
-                            alt="LoOmi Logo"
-                            className="h-8 lg:h-10" // Slightly larger for more prominence
-                            loading="lazy"
-                        />
-                        <span className="text-3xl lg:text-4xl font-extrabold tracking-tight select-none text-indigo-700">LoOmi</span>
-                    </div>
-
-                    {/* Search Bar - Prominent and Central */}
-                    <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-grow max-w-lg mx-6">
+                {/* Search, User, Wishlist, Cart Icons - Right aligned */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                    {/* Search Icon/Bar for desktop - Appears only when needed */}
+                    <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center relative">
                         <input
                             type="text"
-                            placeholder="Search for products, categories..."
+                            placeholder="Search..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="flex-grow border border-gray-300 rounded-l-full py-3 px-5 focus:outline-none focus:border-indigo-500 text-base"
+                            className="border border-gray-300 rounded-full py-1.5 pl-4 pr-10 text-sm focus:outline-none focus:border-indigo-500 w-36"
                         />
                         <button
                             type="submit"
-                            className="bg-indigo-600 text-white px-6 rounded-r-full hover:bg-indigo-700 transition-colors flex items-center justify-center"
+                            className="absolute right-0 top-0 h-full w-10 text-gray-600 hover:text-indigo-600 flex items-center justify-center"
                             aria-label="Search"
                         >
                             <FaSearch className="text-lg" />
                         </button>
                     </form>
 
-                    {/* Icons & Auth */}
-                    <div className="flex items-center gap-4 lg:gap-7 flex-shrink-0">
-                        {/* User/Auth Dropdown */}
-                        {isLoggedIn ? (
-                            <div className="relative hidden md:block" ref={dropdownRef}>
-                                <button
-                                    onClick={() => setIsDropdownOpen((prev) => !prev)}
-                                    className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
-                                    aria-label="User Account Menu"
-                                >
-                                    <FaUserCircle className="text-2xl" />
-                                    <span className="font-medium text-sm hidden lg:inline-block max-w-[100px] truncate">{user?.name || 'Account'}</span>
-                                    <FaChevronDown className="text-xs ml-1" />
-                                </button>
+                    {/* User/Auth Dropdown */}
+                    {isLoggedIn ? (
+                        <div className="relative hidden md:block" ref={dropdownRef}>
+                            <button
+                                onClick={() => setIsDropdownOpen((prev) => !prev)}
+                                className="flex items-center gap-1 text-gray-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2"
+                                aria-label="User Account Menu"
+                            >
+                                <FaUser className="text-xl" />
+                                <span className="font-medium text-sm hidden xl:inline-block max-w-[80px] truncate">{user?.name || 'Account'}</span>
+                                <FaChevronDown className="text-xs ml-0.5" />
+                            </button>
 
-                                {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
-                                        <button
-                                            onClick={() => { setIsDropdownOpen(false); navigate('/account'); }}
-                                            className="w-full text-left px-4 py-3 text-gray-700 hover:bg-indigo-50 flex items-center gap-3 transition-colors"
-                                        >
-                                            <FaUserCircle /> Profile
-                                        </button>
-                                        <button
-                                            onClick={() => { setIsDropdownOpen(false); navigate('/myorders'); }}
-                                            className="w-full text-left px-4 py-3 text-gray-700 hover:bg-indigo-50 flex items-center gap-3 transition-colors"
-                                        >
-                                            <FaClipboardList /> Orders
-                                        </button>
-                                        <button
-                                            onClick={() => { setIsDropdownOpen(false); logout(); navigate('/'); }}
-                                            className="w-full text-left px-4 py-3 text-red-600 font-semibold hover:bg-red-50 flex items-center gap-3 transition-colors"
-                                        >
-                                            <FaSignOutAlt /> Logout
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="hidden md:flex items-center gap-3">
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    className="text-gray-700 hover:text-indigo-600 font-semibold text-sm px-3 py-2 rounded-md transition-colors"
-                                >
-                                    Sign In
-                                </button>
-                                <button
-                                    onClick={() => navigate('/register')}
-                                    className="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors shadow-md"
-                                >
-                                    Register
-                                </button>
-                            </div>
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                                    <button
+                                        onClick={() => { setIsDropdownOpen(false); navigate('/account'); }}
+                                        className="w-full text-left px-4 py-3 text-gray-700 hover:bg-indigo-50 flex items-center gap-3 transition-colors"
+                                    >
+                                        <FaUserCircle /> Profile
+                                    </button>
+                                    <button
+                                        onClick={() => { setIsDropdownOpen(false); navigate('/myorders'); }}
+                                        className="w-full text-left px-4 py-3 text-gray-700 hover:bg-indigo-50 flex items-center gap-3 transition-colors"
+                                    >
+                                        <FaClipboardList /> Orders
+                                    </button>
+                                    <button
+                                        onClick={() => { setIsDropdownOpen(false); logout(); navigate('/'); }}
+                                        className="w-full text-left px-4 py-3 text-red-600 font-semibold hover:bg-red-50 flex items-center gap-3 transition-colors"
+                                    >
+                                        <FaSignOutAlt /> Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="hidden md:flex items-center gap-2">
+                            <button
+                                onClick={() => navigate('/login')}
+                                className="text-gray-700 hover:text-indigo-600 font-semibold text-sm px-3 py-2 rounded-md transition-colors"
+                            >
+                                Sign In
+                            </button>
+                            {/* <button // Optional: Register button if you want to keep login/register separate
+                                onClick={() => navigate('/register')}
+                                className="bg-indigo-600 text-white text-sm px-3 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                            >
+                                Register
+                            </button> */}
+                        </div>
+                    )}
+
+                    {/* Wishlist Icon */}
+                    <button
+                        onClick={() => navigate('/wishlist')}
+                        className="relative flex items-center text-gray-700 hover:text-indigo-600 p-2"
+                        aria-label={`Wishlist with ${wishlist?.length} items`}
+                    >
+                        <FaHeart className="text-xl" />
+                        {wishlist?.length > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] h-[18px] flex items-center justify-center font-bold">
+                                {wishlist.length}
+                            </span>
                         )}
+                    </button>
 
-                        {/* Wishlist Icon */}
-                        <button
-                            onClick={() => navigate('/wishlist')}
-                            className="relative flex items-center text-gray-700 hover:text-indigo-600 p-2"
-                            aria-label={`Wishlist with ${wishlist?.length} items`}
-                        >
-                            <FaHeart className="text-2xl" />
-                            {wishlist?.length > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] h-[20px] flex items-center justify-center font-bold">
-                                    {wishlist.length}
-                                </span>
-                            )}
-                        </button>
+                    {/* Cart Icon */}
+                    <button
+                        onClick={() => navigate('/cart')}
+                        className="relative flex items-center text-gray-700 hover:text-indigo-600 p-2"
+                        aria-label={`Shopping Cart with ${cartItems.length} items`}
+                    >
+                        <FaShoppingCart className="text-xl" />
+                        {cartItems.length > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] h-[18px] flex items-center justify-center font-bold">
+                                {cartItems.length}
+                            </span>
+                        )}
+                    </button>
 
-                        {/* Cart Icon */}
-                        <button
-                            onClick={() => navigate('/cart')}
-                            className="relative flex items-center text-gray-700 hover:text-indigo-600 p-2"
-                            aria-label={`Shopping Cart with ${cartItems.length} items`}
-                        >
-                            <FaShoppingCart className="text-2xl" />
-                            {cartItems.length > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] h-[20px] flex items-center justify-center font-bold">
-                                    {cartItems.length}
-                                </span>
-                            )}
-                        </button>
-
-                        {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
-                        <button
-                            className="md:hidden text-gray-700 hover:text-indigo-600 focus:outline-none p-2"
-                            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                            aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-                        >
-                            {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
-                        </button>
-                    </div>
+                    {/* Mobile Menu Toggle Button (Hamburger / Close Icon) */}
+                    <button
+                        className="md:hidden text-gray-700 hover:text-indigo-600 focus:outline-none p-2"
+                        onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                        aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+                    >
+                        {isMobileMenuOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
+                    </button>
                 </div>
             </div>
 
-            {/* Desktop Navigation Bar (Main Links & Categories) */}
-            <nav className="bg-gradient-to-r from-indigo-700 to-indigo-600 hidden md:block shadow-inner">
-                <div className="container mx-auto flex items-center justify-start px-4 py-3">
-                    <ul className="flex items-center gap-x-8 text-white font-semibold">
-                        <li>
-                            <button onClick={() => navigate('/')} className="hover:text-indigo-100 transition-colors px-3 py-2 rounded-md flex items-center gap-2">
-                                <FaHome className="text-lg" /> Home
-                            </button>
-                        </li>
-                        <li>
-                            <button onClick={() => navigate('/shop')} className="hover:text-indigo-100 transition-colors px-3 py-2 rounded-md flex items-center gap-2">
-                                <FaStore className="text-lg" /> Shop
-                            </button>
-                        </li>
-                        <li>
-                            <button onClick={() => navigate('/offersalepage')} className="hover:text-indigo-100 transition-colors px-3 py-2 rounded-md flex items-center gap-2">
-                                <FaTag className="text-lg" /> Sale
-                            </button>
-                        </li>
-                        {/* Category Dropdown in Nav Bar for Desktop */}
-                        <li className="relative text-white">
-                            <select
-                                className="block bg-transparent text-white py-2 px-3 rounded-md focus:outline-none focus:ring-0 cursor-pointer appearance-none font-semibold hover:text-indigo-100 transition-colors border-none"
-                                value={selectedCategory}
-                                onChange={handleCategoryChange}
-                            >
-                                <option value="" className="text-gray-800">All Categories</option>
-                                {categories.map(({ _id, name }) => (
-                                    <option key={_id} value={name} className="text-gray-800">
-                                        {name}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-indigo-100">
-                                <FaChevronDown className="h-3 w-3" />
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            {/* Mobile Menu Drawer */}
+            {/* Mobile Menu Drawer (Improved) */}
             {/* Overlay */}
             {isMobileMenuOpen && (
                 <div
@@ -365,7 +336,7 @@ export default function Navbar() {
                     </div>
 
                     <div className="mt-6 border-t pt-4 border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-500 mb-2">Need Help?</h3>
+                        <h3 className="text-lg font-semibold text-gray-500 mb-2">Contact</h3>
                         <div className="flex items-center gap-2 text-base text-gray-700">
                             <FaPhoneAlt className="text-base text-gray-600" />
                             <span>Call Us: <strong className="text-gray-900">95396-97664</strong></span>
@@ -373,6 +344,6 @@ export default function Navbar() {
                     </div>
                 </div>
             </nav>
-        </>
+        </div>
     );
 }
