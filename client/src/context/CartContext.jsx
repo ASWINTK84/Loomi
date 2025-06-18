@@ -2,7 +2,6 @@ import React, { createContext, useState, useEffect, useContext, useCallback } fr
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
 export const CartContext = createContext();
 
@@ -12,7 +11,7 @@ export const CartProvider = ({ children }) => {
  const [cartTotal, setCartTotal] = useState(0);
  const [loadingCart, setLoadingCart] = useState(false); 
  const [cartError, setCartError] = useState(null);
- const navigate = useNavigate();
+ 
 
  const CART_API_BASE_URL = 'https://loomibackend.onrender.com/api/v1/cart';
 
@@ -53,7 +52,7 @@ const { data } = await axios.get(CART_API_BASE_URL, config);
  const addToCart = async (product, quantity = 1, size, color) => {
   if (!isLoggedIn) {
    toast.error('Please log in to add items to the cart.');
-   navigate('/login')
+   navigate('/login');
    return;
   }
   if (!token) {
