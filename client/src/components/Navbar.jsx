@@ -15,7 +15,8 @@ import {
     FaUserPlus,
     FaUserCircle,
     FaClipboardList,
-    FaSignOutAlt
+    FaSignOutAlt,
+    FaPhoneAlt
 } from 'react-icons/fa';
 import { useCategory } from '../context/CategoryContext';
 import { AuthContext } from '../context/AuthContext';
