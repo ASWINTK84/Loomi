@@ -6,8 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  // We no longer need a separate 'success' or 'error' state for messages
-  // since react-toastify will handle the display.
+  
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,11 +16,11 @@ const ContactPage = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post('https://loomibackend.onrender.com/api/contact', form);
-      // Show success toast
+    
       toast.success(data.message || 'Message sent successfully!');
-      setForm({ name: '', email: '', message: '' }); // Clear the form on success
+      setForm({ name: '', email: '', message: '' }); 
     } catch (err) {
-      // Show error toast
+    
       const errorMessage = err.response?.data?.error || 'Something went wrong. Please try again.';
       toast.error(errorMessage);
     }
