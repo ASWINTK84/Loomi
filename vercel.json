@@ -1,13 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/vite",
-      "config": {
-        "project": "client/vite.config.js"
-      }
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -15,6 +6,10 @@
         {
           "key": "Cross-Origin-Opener-Policy",
           "value": "same-origin-allow-popups"
+        },
+        {
+           "key": "X-Content-Type-Options",
+           "value": "nosniff"
         }
       ]
     }
